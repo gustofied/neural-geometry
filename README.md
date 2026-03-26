@@ -2,13 +2,13 @@
 
 Exploring the geometry of piecewise-linear regions in ReLU networks.
 
-### Focus
+##### Focus
 
 - Activation region partitions induced by ReLU networks
 - Boundary geometry and topology of linear regions
 - Visualization and interactive exploration of decision surfaces
 
-### Setup
+##### Setup
 
 ```bash
 uv sync
