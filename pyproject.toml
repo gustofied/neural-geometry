@@ -1,0 +1,9 @@
+[project]
+name = "neural-geometry"
+version = "0.1.0"
+description = "Exploring the geometry of piecewise-linear regions in ReLU networks"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy>=2.4.3",
+]
