@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 dir = Path(__file__).resolve().parent
 data_path = dir / "data"/ "clean_weather.csv"
@@ -27,3 +28,10 @@ print(f"Wegiht: {lr.coef_[0]:.2f}")
 print(f"Bias {lr.intercept_:.2f}")
 plt.show()
 
+
+y_true = [3, -0.5, 2, 7]
+y_pred = [2.5, 0.0, 2, 8]
+
+mse = mean_squared_error(y_true, y_pred)
+
+print("Mean Squared Error:", mse)
