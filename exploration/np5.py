@@ -75,3 +75,59 @@ lr = 2e-5
 new_weight = 1 - lr * gradient(1, y) * 80
 plt.plot(new_weight, loss(new_weight, y), 'go')
 plt.show()
+
+PREDICTORS = ["tmax", "tmin", "rain"]
+TARGET = "tmax_tomorrow"
+
+np.random.seed(0)
+train, valid, test = data.iloc[:int(.7*len(data))], data.iloc[int(.7*len(data)):int(.85*len(data))], data.iloc[int(.85*len(data)):]
+(train_x, train_y), (valid_x, valid_y), (test_x, test_y) = [[d[PREDICTORS].to_numpy(), d[[TARGET]].to_numpy()] for d in [train, valid, test]]
+
+import math
+
+def init_params(predictors):
+    np.random.seed(0)
+    weights = np.random.rand(predictors, 1)
+    biases = np.ones((1, 1))
+    return [weights, biases]
+
+init_params(3)
+
+def forward(params, x):
+    weights, biases = params
+    prediction = x @ weights + biases
+    return prediction
+
+def mse(actual, predicted):
+    return np.mean((actual-predicted) ** 2)
+
+def mse_grad(actual, predicted):
+    return predicted - actual
+
+def backward(params, x, lr, grad):
+    # x1 * g, x2 * 2, x3 * g
+    w_grad = (x.T / x.shape[0]) @ grad
+    b_grad = np.mean(grad, axis=0)
+
+    params[0] -= w_grad * lr
+    params[1] -= b_grad * lr
+
+    return params
+
+lr = 1e-4
+epochs = 10000
+
+params = init_params(train_x.shape[1])
+
+for i in range(epochs):
+    predictions = forward(params, train_x)
+    grad = mse_grad(train_y, predictions)
+
+    params = backward(params, train_x, lr, grad)
+
+    if i % 1000 == 0:
+        predictions = forward(params, valid_x)
+        valid_loss = mse(valid_y, predictions)
+
+        print(f"Epoch {i} loss: {valid_loss}")
+
