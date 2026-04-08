@@ -12,7 +12,7 @@ class ReLU():
 
 class Sigmoid():
     def forward(self, x):
-        self.y_out = np.exp(x) / (1. + np.exp(x)) # writing this term the more common way with diviining on 1 + np.exp(-x) will mitigaate the issue of overlfow when im doing np.exp(x) as it can become very largey
+        self.y_out = np.exp(x) / (1. + np.exp(x)) # wee changeup writing this term the more common way with diviining on 1 + np.exp(-x) will mitigaate the issue of overlfow when im doing np.exp(x) as it can become very largey
         return self.y_out
 
     def backward(self, grad):
@@ -20,7 +20,7 @@ class Sigmoid():
 
 class Softmax():
     def forward(self, x):
-        exp = np.exp(x)
+        exp = np.exp(x) # stabalize here?so
         self.y_out = exp / exp.sum(axis=1)[:, None]
         return self.y_out
 
