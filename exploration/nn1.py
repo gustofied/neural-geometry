@@ -77,21 +77,15 @@ def train(model,lr,nb_epoch,data):
         for mini_batch in data:
             inputs,targets = mini_batch
             num_inputs += inputs.shape[0]
-            #Forward pass + compute loss
             running_loss += model.loss(inputs,targets).sum()
-            #Back propagation
             model.backward()
-            #Update of the parameters
             for layer in model.layers:
-                if type(layer) == Linear:
+                if isinstance(layer, Linear):
                     layer.weights -= lr * layer.grad_w
                     layer.biases -= lr * layer.grad_b
         print(f'Epoch {epoch+1}/{nb_epoch}: loss = {running_loss/num_inputs}')
 
-# data
-
 X, y = make_moons(n_samples=1000, noise=0.1)
-
 Y = np.zeros((len(y), 2))
 Y[np.arange(len(y)), y] = 1
 
