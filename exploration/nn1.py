@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.datasets import make_moons
 import matplotlib.pyplot as plt
 
-
 class ReLU():
     def forward(self, x):
         self.x_in = np.copy(x)
@@ -10,7 +9,6 @@ class ReLU():
 
     def backward(self, grad):
         return np.where(self.x_in>0,grad,0) 
-
 
 class Sigmoid():
     def forward(self, x):
@@ -52,7 +50,6 @@ class Linear():
         self.grad_w = (self.x_in[:,:,None] @ grad[:,None,:]).mean(axis=0)
         return grad @ self.weights.T
 
-
 class Model():
     def __init__(self, layers, cost):
         self.layers = layers
@@ -70,7 +67,6 @@ class Model():
         grad = self.cost.backward()
         for i in range(len(self.layers)-1,-1,-1):
             grad = self.layers[i].backward(grad)
-
 
 net = Model([Linear(2, 20), ReLU(), Linear(20, 2), Softmax()], CrossEntropy())
 
