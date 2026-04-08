@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.datasets import make_moons
+import matplotlib.pyplot as plt
 
 
 class ReLU():
@@ -13,7 +14,7 @@ class ReLU():
 
 class Sigmoid():
     def forward(self, x):
-        self.y_out = np.exp(x) / (1. + np.exp(x))
+        self.y_out = np.exp(x) / (1. + np.exp(x)) # writing this term the more common way with diviining on 1 + np.exp(-x) will mitigaate the issue of overlfow when im doing np.exp(x) as it can become very largey
         return self.y_out
 
     def backward(self, grad):
