@@ -26,7 +26,7 @@ def make_blobs(n=300, seed=42):
     X0  = rng.normal([-3.0, 0.0], 0.45, (n // 2, 2))
     X1  = rng.normal([ 3.0, 0.0], 0.45, (n // 2, 2))
     X   = np.vstack([X0, X1])
-    y   = np.array([0] * (n // 2) + [1] * (n // 2), dtype=float)
+    y   = np.array([0] * (n // 2) + [1] * (n // 2), dtype=int)
     return X, y
 
 
@@ -236,7 +236,7 @@ def plot_confidence_maps(model, bll, X, y, n_samples=256):
 
 def plot_1d_probe(model, bll, x_range=(-9.0, 9.0), n_points=400, n_samples=256):
     """Confidence along the x-axis (y=0).
-    Both line and band are mean/std of per-sample confidence — same quantity throughout."""
+    Line = mean, band = ±3σ, both of per-sample confidence across posterior samples."""
     xs  = np.linspace(*x_range, n_points)
     pts = np.c_[xs, np.zeros_like(xs)]
 
