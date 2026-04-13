@@ -2,6 +2,8 @@
 
 Building intuition for neural networks through simple models, visualization, and graphics programming.
 
+[Full write-up](https://www.adamsioud.com/projects/neural-geometry.html)
+
 ---
 
 ##### Setup
