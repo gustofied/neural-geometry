@@ -5,11 +5,27 @@ description = "Exploring the geometry of piecewise-linear regions in ReLU networ
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "glfw>=2.10.0",
     "matplotlib>=3.10.8",
     "numba>=0.64.0",
     "numpy>=2.4.3",
     "pandas>=3.0.2",
+    "pyopengl>=3.1.10",
     "scikit-learn>=1.8.0",
     "scipy>=1.17.1",
     "typer>=0.24.1",
 ]
+
+[project.scripts]
+neural-geometry = "main:app"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+only-include = ["main.py"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

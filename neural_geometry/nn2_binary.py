@@ -339,15 +339,20 @@ def plot_logit_surface(model, X, margin=5.0, h=0.06):
 # ── run ───────────────────────────────────────────────────────────────────
 PRIOR_STD = 1.0   # ← choose after inspecting plot_prior_sweep
 
-X, y = make_blobs()
-net  = make_net()
-train(net, X, y)
 
-plot_prior_sweep(net, X, y)
-bll = BayesianLastLayer(net, X, prior_std=PRIOR_STD)
-plot_confidence_maps(net, bll, X, y)
-plot_1d_probe(net, bll)
+def build(prior_std=PRIOR_STD):
+    X, y = make_blobs()
+    net  = make_net()
+    train(net, X, y)
+    bll  = BayesianLastLayer(net, X, prior_std=prior_std)
+    return net, bll, X, y
 
-# optional geometry views — uncomment to enable
-# plot_feature_space(net, X, y)
-# plot_logit_surface(net, X)
+
+if __name__ == "__main__":
+    net, bll, X, y = build()
+    plot_prior_sweep(net, X, y)
+    plot_confidence_maps(net, bll, X, y)
+    plot_1d_probe(net, bll)
+    # optional geometry views — uncomment to enable
+    # plot_feature_space(net, X, y)
+    # plot_logit_surface(net, X)

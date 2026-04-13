@@ -1,39 +1,32 @@
-"""
-neural-geometry — project entry point
-
-Run with:  uv run main.py
-"""
-import sys
 import os
+import sys
+import typer
+
+app = typer.Typer(help="neural-geometry visualizations")
 
 SCRIPTS = {
-    "1": ("nn1  — ReLU geometry: radial bands, activation regions, confidence map",
-          "exploration/nn1_geometry.py"),
-    "2": ("nn2  — paper reproduction: binary LLLA vs MAP (Kristiadi et al. 2020)",
-          "exploration/nn2_binary.py"),
+    "simple":   ("simple neural network",                            "exploration/nn1.py"),
+    "relu":     ("radial bands and activation regions",              "neural_geometry/nn1_geometry.py"),
+    "bayesian": ("MAP vs LLLA confidence maps",                      "neural_geometry/nn2_binary.py"),
+    "relu-gl":  ("interactive linear regions",                       "neural_geometry/gl1_geometry.py"),
+    "bayes-gl": ("confidence field and posterior boundaries",        "neural_geometry/gl2_binary.py"),
 }
 
-def main():
-    print("\nneural-geometry\n" + "─" * 40)
-    for key, (label, _) in SCRIPTS.items():
-        print(f"  [{key}]  {label}")
-    print("─" * 40)
-
-    choice = input("select: ").strip()
-
-    if choice not in SCRIPTS:
-        print(f"unknown option: {choice!r}")
-        sys.exit(1)
-
-    _, path = SCRIPTS[choice]
-    full_path = os.path.join(os.path.dirname(__file__), path)
-
-    with open(full_path) as f:
+def _run(name: str):
+    path = os.path.join(os.path.dirname(__file__), SCRIPTS[name][1])
+    script_dir = os.path.dirname(path)
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+    with open(path) as f:
         code = f.read()
+    exec(compile(code, path, "exec"), {"__file__": path, "__name__": "__main__"})
 
-    # run the selected script with its own __file__ so relative imports work
-    exec(compile(code, full_path, "exec"), {"__file__": full_path, "__name__": "__main__"})
-
+for _name, (_label, _) in SCRIPTS.items():
+    def _make(name=_name, label=_label):
+        @app.command(name=name, help=label)
+        def _cmd():
+            _run(name)
+    _make()
 
 if __name__ == "__main__":
-    main()
+    app()
