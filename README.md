@@ -2,7 +2,7 @@
 
 Building intuition for neural networks through simple models, visualization, and graphics programming.
 
-[Full write-up](https://www.adamsioud.com/projects/neural-geometry.html)
+For the full write-up, see [adamsioud.com/projects/neural-geometry](https://www.adamsioud.com/projects/neural-geometry.html)
 
 ---
 
@@ -21,7 +21,7 @@ uv run neural-geometry [command]
 | command | description |
 |---|---|
 | `simple` | simple neural network |
-| `speed` | python vs numpy vs numba — forward pass benchmark |
+| `speed` | python vs numpy vs numba, forward pass benchmark |
 | `relu` | radial bands and activation regions |
 | `bayesian` | MAP vs LLLA confidence maps |
 | `relu-gl` | interactive linear regions |
@@ -35,4 +35,4 @@ Interactive OpenGL viewer for the linear regions a ReLU network creates. Move th
 
 ##### bayes-gl
 
-OpenGL viewer comparing MAP and LLLA confidence side by side. The color encodes class (orange / teal) and saturation encodes conviction — MAP stays vivid everywhere, LLLA fades to grey far from training data. Sampled posterior decision boundaries are drawn as a pink fan: tight near the data, spreading out where the model is uncertain. The divider sweeps automatically.
+OpenGL viewer comparing MAP and LLLA confidence side by side. The color encodes class (orange / teal) and saturation encodes conviction. MAP stays vivid everywhere, LLLA fades to grey far from training data. Sampled posterior decision boundaries are drawn as a pink fan: tight near the data, spreading out where the model is uncertain. The divider sweeps automatically.
