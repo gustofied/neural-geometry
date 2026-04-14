@@ -27,6 +27,26 @@ uv run neural-geometry [command]
 
 ---
 
+##### simple
+
+Two-class classifier built from scratch in NumPy, trained on the moons dataset. Inspired by [Sylvain Gugger's numpy neural net](https://sgugger.github.io/a-simple-neural-net-in-numpy.html).
+
+---
+
+##### speed
+
+```
+forward pass  —  200 samples, 2→32→32
+
+  python      30.48 ms
+  numpy       0.0232 ms    1316x faster than python
+  numba       0.0560 ms     544x faster than python    0.4x vs numpy
+```
+
+Numba loses to NumPy here because the matmul is small enough that NumPy's BLAS kernel dominates. Numba compiles loops, but BLAS is hand-tuned assembly. At larger matrix sizes the gap closes and can flip.
+
+---
+
 ##### relu-gl
 
 Interactive OpenGL viewer for the linear regions a ReLU network creates. Move the mouse to highlight the region under the cursor. The decision boundary glows red. Pan with drag, zoom with scroll.
