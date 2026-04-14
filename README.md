@@ -27,13 +27,11 @@ uv run neural-geometry [command]
 
 ---
 
-##### simple
----
+<kbd>simple</kbd>
 
 Two-class classifier built from scratch in NumPy, trained on the moons dataset. Inspired by [Sylvain Gugger's numpy neural net](https://sgugger.github.io/a-simple-neural-net-in-numpy.html).
 
-##### speed
----
+<kbd>speed</kbd>
 
 Three implementations of a two-layer ReLU forward pass: pure Python loops, NumPy, and Numba. Numba is normally the winner for tight numerical loops, but here NumPy edges it out because the matrices are small enough that BLAS (which NumPy calls under the hood) is hard to beat. The gap closes at larger sizes.
 
@@ -45,12 +43,10 @@ Three implementations of a two-layer ReLU forward pass: pure Python loops, NumPy
   numba       0.0566 ms     562x faster than python    0.4x vs numpy
 ```
 
-##### relu-gl
----
+<kbd>relu-gl</kbd>
 
 Interactive OpenGL viewer for the linear regions a ReLU network creates. Move the mouse to highlight the region under the cursor. The decision boundary glows red. Pan with drag, zoom with scroll.
 
-##### bayes-gl
----
+<kbd>bayes-gl</kbd>
 
 OpenGL viewer comparing MAP and LLLA confidence side by side. The color encodes class (orange / teal) and saturation encodes conviction. MAP stays vivid everywhere, LLLA fades to grey far from training data. Sampled posterior decision boundaries are drawn as a pink fan: tight near the data, spreading out where the model is uncertain. The divider sweeps automatically.
