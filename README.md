@@ -1,7 +1,6 @@
 #### Neural Geometry
 
-Building intuition for neural networks through simple models, visualization, and graphics programming.
-For the full write-up, see [adamsioud.com/projects/neural-geometry](https://www.adamsioud.com/projects/neural-geometry.html)
+Building intuition for neural networks through simple models, visualization, and graphics programming. For the full write-up, see [adamsioud.com/projects/neural-geometry](https://www.adamsioud.com/projects/neural-geometry.html). The project uses NumPy, Numba, Matplotlib, and OpenGL, and is very much also a teaching ground for those.
 
 ---
 
