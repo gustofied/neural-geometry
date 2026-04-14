@@ -25,6 +25,10 @@ uv run neural-geometry [command]
 | `relu-gl` | interactive linear regions |
 | `bayes-gl` | confidence field and posterior boundaries |
 
+---
+
+##### Commands
+
 ##### simple
 
 Two-class classifier built from scratch in NumPy, trained on the moons dataset. Inspired by [Sylvain Gugger's numpy neural net](https://sgugger.github.io/a-simple-neural-net-in-numpy.html).
