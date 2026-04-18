@@ -12,7 +12,10 @@ class ReLU():
 
 class Sigmoid():
     def forward(self, x):
-        self.y_out = np.exp(x) / (1. + np.exp(x)) # writing this term the more common way with diviining on 1 + np.exp(-x) will mitigaate the issue of overlfow when im doing np.exp(x) as it can become very largey
+        self.y_out = np.exp(x) / (1. + np.exp(x)) 
+        # Using 1 / (1 + np.exp(-x)) would be more numerically stable
+        # than np.exp(x) / (1 + np.exp(x)), since np.exp(x) can overflow
+        # for large positive x.
         return self.y_out
 
     def backward(self, grad):
@@ -20,7 +23,7 @@ class Sigmoid():
 
 class Softmax():
     def forward(self, x):
-        exp = np.exp(x)
+        exp = np.exp(x) # not stable?
         self.y_out = exp / exp.sum(axis=1)[:, None]
         return self.y_out
 
@@ -89,6 +92,7 @@ X, y = make_moons(n_samples=1000, noise=0.1)
 Y = np.zeros((len(y), 2))
 Y[np.arange(len(y)), y] = 1
 
+# no shuffle should be imrpoved
 def make_batches(X, Y, batch_size=64):
     data = []
     for i in range(0, len(X), batch_size):

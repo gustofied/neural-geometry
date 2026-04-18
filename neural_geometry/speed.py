@@ -2,7 +2,8 @@ import timeit
 import numpy as np
 from numba import njit
 
-rng = np.random.default_rng(42)
+rng = np.random.default_rng(42) # on the random https://blog.scientific-python.org/numpy/numpy-rng/ 
+
 
 N       = 200
 D_IN    = 2
