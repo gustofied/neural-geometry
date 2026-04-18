@@ -5,8 +5,8 @@ import typer
 app = typer.Typer(help="neural-geometry visualizations")
 
 SCRIPTS = {
-    "simple":   ("simple neural network",                            "exploration/nn1.py"),
-    "speed":    ("python vs numpy vs numba, a simple forward pass benchmark","exploration/speed.py"),
+    "simple":   ("simple neural network",                            "neural_geometry/simple.py"),
+    "speed":    ("python vs numpy vs numba, a simple forward pass benchmark","neural_geometry/speed.py"),
     "relu":     ("radial bands and activation regions",              "neural_geometry/nn1_geometry.py"),
     "bayesian": ("MAP vs LLLA confidence maps",                      "neural_geometry/nn2_binary.py"),
     "relu-gl":  ("interactive linear regions",                       "neural_geometry/gl1_geometry.py"),

@@ -29,18 +29,23 @@ uv run neural-geometry [command]
 
 <kbd>simple</kbd>
 
-Two-class classifier built from scratch in NumPy, trained on the moons dataset. Inspired by [Sylvain Gugger's numpy neural net](https://sgugger.github.io/a-simple-neural-net-in-numpy.html).
+Two-class classifier built from scratch in NumPy. Inspired by [Sylvain Gugger's numpy neural net](https://sgugger.github.io/a-simple-neural-net-in-numpy.html).
 
 <kbd>speed</kbd>
 
-Three implementations of a two-layer ReLU forward pass: pure Python loops, NumPy, and Numba. Numba is normally the winner for tight numerical loops, but here NumPy edges it out because the matrices are small enough that BLAS (which NumPy calls under the hood) is hard to beat. The gap closes at larger sizes.
-
-200 samples, 2 → 32 → 32
+Two benchmarks: a dense forward pass and a per-pixel ReLU region computation. The forward pass maps cleanly to matrix multiplies, so NumPy wins via BLAS. The region grid is loop-heavy per-pixel work, and Numba pulls ahead.
 
 ```
-  python      31.83 ms
-  numpy       0.0216 ms    1477x faster than python
-  numba       0.0566 ms     562x faster than python    0.4x vs numpy
+forward pass, 200 samples, 2 > 32 > 32
+
+  python      30.91 ms
+  numpy       0.0231 ms    1339x faster than python
+  numba       0.0578 ms     535x faster than python    0.4x vs numpy
+
+region grid, 600x600, 32 hidden units
+
+  numpy      38.256 ms
+  numba       6.952 ms     5.5x vs numpy
 ```
 
 <kbd>relu-gl</kbd>
