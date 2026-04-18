@@ -19,7 +19,7 @@ uv run neural-geometry [command]
 | command | description |
 |---|---|
 | `simple` | simple neural network |
-| `speed` | python vs numpy vs numba, forward pass benchmark |
+| `speed` | python vs numpy vs numba, forward pass and ReLU region grid |
 | `relu` | radial bands and activation regions |
 | `bayesian` | MAP vs LLLA confidence maps |
 | `relu-gl` | interactive linear regions |
@@ -33,7 +33,7 @@ Two-class classifier built from scratch in NumPy. Inspired by [Sylvain Gugger's 
 
 <kbd>speed</kbd> &nbsp; [neural_geometry/speed.py](neural_geometry/speed.py)
 
-Two benchmarks: a dense forward pass and a per-pixel ReLU region computation. The forward pass maps cleanly to matrix multiplies, so NumPy wins through BLAS. The region grid is loop-heavy per-pixel work, where Numba pulls ahead.
+Two benchmarks: a dense forward pass and a ReLU region grid. NumPy wins on the dense matmul-heavy case; Numba wins on the loop-heavy grid computation. I'm using this experiment to get a better feel for where Numba helps, especially in the kind of numerical and visualization code that shows up around projects like this. For a concise introduction, see [Python⇒Speed](https://pythonspeed.com/articles/numba-faster-python/).
 
 ```
 forward pass, 200 samples, 2 → 32 → 32
