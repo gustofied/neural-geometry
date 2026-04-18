@@ -4,9 +4,6 @@ from numba import njit
 
 rng = np.random.default_rng(42)
 
-# --- benchmark 1: forward pass, three ways ---
-# dense matmul favors numpy because it calls optimized BLAS under the hood
-
 N       = 200
 D_IN    = 2
 D_H     = 32
@@ -54,9 +51,6 @@ def forward_numba(W1, b1, W2, b2, x):
     return out
 
 
-# --- benchmark 2: ReLU region labeling on a grid ---
-# per-pixel gate pattern computation, loop-heavy, numba territory
-
 GRID = 600
 H    = 32
 
@@ -95,20 +89,16 @@ def regions_numba(W, b, xs, ys):
 
 if __name__ == "__main__":
 
-    # verify implementations agree
-    forward_numba(W1, b1, W2, b2, X)  # compile
-    regions_numba(W_r, b_r, xs, ys)   # compile
+    forward_numba(W1, b1, W2, b2, X)  
+    regions_numba(W_r, b_r, xs, ys) 
 
     assert np.allclose(forward_numpy(W1, b1, W2, b2, X),
                        forward_numba(W1, b1, W2, b2, X))
     assert np.array_equal(regions_numpy(W_r, b_r, xs, ys),
                           regions_numba(W_r, b_r, xs, ys))
-
-    # warm up numpy
     forward_numpy(W1, b1, W2, b2, X)
     regions_numpy(W_r, b_r, xs, ys)
 
-    # benchmark 1: forward pass
     print(f"forward pass, {N} samples, {D_IN} \u2192 {D_H} \u2192 {D_H}\n")
 
     t_py = timeit.timeit(lambda: forward_python(W1, b1, W2, b2, X), number=5) / 5
@@ -121,8 +111,7 @@ if __name__ == "__main__":
     print(f"  numba    {t_nb * 1000:8.4f} ms   {t_py / t_nb:6.0f}x faster than python  "
           f"  {t_np / t_nb:.1f}x vs numpy")
 
-    # benchmark 2: region grid
-    print(f"\nregion grid, {GRID}x{GRID}, {H} hidden units\n")
+    print(f"\nactivation-region map, {GRID}x{GRID}, {H} hidden units\n")
 
     t_np2 = timeit.timeit(lambda: regions_numpy(W_r, b_r, xs, ys), number=20) / 20
     print(f"  numpy    {t_np2 * 1000:8.3f} ms")
