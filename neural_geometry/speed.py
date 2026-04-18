@@ -95,7 +95,7 @@ def regions_numba(W, b, xs, ys):
 if __name__ == "__main__":
 
     # benchmark 1: forward pass
-    print(f"forward pass, {N} samples, {D_IN} > {D_H} > {D_H}\n")
+    print(f"forward pass, {N} samples, {D_IN} \u2192 {D_H} \u2192 {D_H}\n")
 
     t_py = timeit.timeit(lambda: forward_python(W1, b1, W2, b2, X), number=5) / 5
     print(f"  python   {t_py * 1000:8.2f} ms")
