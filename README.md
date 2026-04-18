@@ -38,14 +38,14 @@ Two benchmarks: a dense forward pass and a per-pixel ReLU region computation. Th
 ```
 forward pass, 200 samples, 2 → 32 → 32
 
-  python      30.91 ms
-  numpy       0.0231 ms    1339x faster than python
-  numba       0.0578 ms     535x faster than python    0.4x vs numpy
+  python      30.75 ms
+  numpy       0.0209 ms    1470x faster than python
+  numba       0.0576 ms     534x faster than python    0.4x vs numpy
 
-region grid, 600x600, 32 hidden units
+region grid, 600×600, 32 hidden units
 
-  numpy      38.256 ms
-  numba       6.952 ms     5.5x vs numpy
+  numpy      35.828 ms
+  numba       6.963 ms     5.1x vs numpy
 ```
 
 <kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl1_geometry.py](neural_geometry/gl1_geometry.py)

@@ -2,6 +2,7 @@ import timeit
 import numpy as np
 from numba import njit
 
+rng = np.random.default_rng(42)
 
 # --- benchmark 1: forward pass, three ways ---
 # dense matmul favors numpy because it calls optimized BLAS under the hood
@@ -10,11 +11,11 @@ N       = 200
 D_IN    = 2
 D_H     = 32
 
-W1 = np.random.randn(D_H, D_IN).astype(np.float64)
-b1 = np.random.randn(D_H).astype(np.float64)
-W2 = np.random.randn(D_H, D_H).astype(np.float64)
-b2 = np.random.randn(D_H).astype(np.float64)
-X  = np.random.randn(N, D_IN).astype(np.float64)
+W1 = rng.standard_normal((D_H, D_IN))
+b1 = rng.standard_normal(D_H)
+W2 = rng.standard_normal((D_H, D_H))
+b2 = rng.standard_normal(D_H)
+X  = rng.standard_normal((N, D_IN))
 
 
 def forward_python(W1, b1, W2, b2, x):
@@ -59,8 +60,8 @@ def forward_numba(W1, b1, W2, b2, x):
 GRID = 600
 H    = 32
 
-W_r = np.random.randn(H, 2).astype(np.float64)
-b_r = np.random.randn(H).astype(np.float64)
+W_r = rng.standard_normal((H, 2))
+b_r = rng.standard_normal(H)
 
 xs = np.linspace(-2.5, 3.0, GRID)
 ys = np.linspace(-2.0, 2.5, GRID)
@@ -94,6 +95,19 @@ def regions_numba(W, b, xs, ys):
 
 if __name__ == "__main__":
 
+    # verify implementations agree
+    forward_numba(W1, b1, W2, b2, X)  # compile
+    regions_numba(W_r, b_r, xs, ys)   # compile
+
+    assert np.allclose(forward_numpy(W1, b1, W2, b2, X),
+                       forward_numba(W1, b1, W2, b2, X))
+    assert np.array_equal(regions_numpy(W_r, b_r, xs, ys),
+                          regions_numba(W_r, b_r, xs, ys))
+
+    # warm up numpy
+    forward_numpy(W1, b1, W2, b2, X)
+    regions_numpy(W_r, b_r, xs, ys)
+
     # benchmark 1: forward pass
     print(f"forward pass, {N} samples, {D_IN} \u2192 {D_H} \u2192 {D_H}\n")
 
@@ -103,7 +117,6 @@ if __name__ == "__main__":
     t_np = timeit.timeit(lambda: forward_numpy(W1, b1, W2, b2, X), number=500) / 500
     print(f"  numpy    {t_np * 1000:8.4f} ms   {t_py / t_np:6.0f}x faster than python")
 
-    forward_numba(W1, b1, W2, b2, X)
     t_nb = timeit.timeit(lambda: forward_numba(W1, b1, W2, b2, X), number=500) / 500
     print(f"  numba    {t_nb * 1000:8.4f} ms   {t_py / t_nb:6.0f}x faster than python  "
           f"  {t_np / t_nb:.1f}x vs numpy")
@@ -114,6 +127,5 @@ if __name__ == "__main__":
     t_np2 = timeit.timeit(lambda: regions_numpy(W_r, b_r, xs, ys), number=20) / 20
     print(f"  numpy    {t_np2 * 1000:8.3f} ms")
 
-    regions_numba(W_r, b_r, xs, ys)
     t_nb2 = timeit.timeit(lambda: regions_numba(W_r, b_r, xs, ys), number=20) / 20
     print(f"  numba    {t_nb2 * 1000:8.3f} ms   {t_np2 / t_nb2:.1f}x vs numpy")
