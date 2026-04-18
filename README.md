@@ -27,11 +27,11 @@ uv run neural-geometry [command]
 
 ---
 
-<kbd>simple</kbd>
+<kbd>simple</kbd> [neural_geometry/simple.py](neural_geometry/simple.py)
 
 Two-class classifier built from scratch in NumPy. Inspired by [Sylvain Gugger's numpy neural net](https://sgugger.github.io/a-simple-neural-net-in-numpy.html).
 
-<kbd>speed</kbd>
+<kbd>speed</kbd> [neural_geometry/speed.py](neural_geometry/speed.py)
 
 Two benchmarks: a dense forward pass and a per-pixel ReLU region computation. The forward pass maps cleanly to matrix multiplies, so NumPy wins via BLAS. The region grid is loop-heavy per-pixel work, and Numba pulls ahead.
 
@@ -48,10 +48,10 @@ region grid, 600x600, 32 hidden units
   numba       6.952 ms     5.5x vs numpy
 ```
 
-<kbd>relu-gl</kbd>
+<kbd>relu-gl</kbd> [neural_geometry/gl1_geometry.py](neural_geometry/gl1_geometry.py)
 
 Interactive OpenGL viewer for the linear regions a ReLU network creates. Move the mouse to highlight the region under the cursor. The decision boundary glows red. Pan with drag, zoom with scroll.
 
-<kbd>bayes-gl</kbd>
+<kbd>bayes-gl</kbd> [neural_geometry/gl2_binary.py](neural_geometry/gl2_binary.py)
 
 OpenGL viewer comparing MAP and LLLA confidence side by side. The color encodes class (orange / teal) and saturation encodes conviction. MAP stays vivid everywhere, LLLA fades to grey far from training data. Sampled posterior decision boundaries are drawn as a pink fan: tight near the data, spreading out where the model is uncertain. The divider sweeps automatically.
