@@ -69,6 +69,7 @@ ys = np.linspace(-2.0, 2.5, GRID)
 def regions_numpy(W, b, xs, ys):
     X, Y = np.meshgrid(xs, ys)
     pts = np.stack([X.ravel(), Y.ravel()], axis=1)
+    H = W.shape[0]
     pre = pts @ W.T + b
     gates = (pre > 0).astype(np.uint32)
     shifts = (1 << np.arange(H, dtype=np.uint32))

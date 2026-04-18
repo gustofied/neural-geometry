@@ -33,10 +33,10 @@ Two-class classifier built from scratch in NumPy. Inspired by [Sylvain Gugger's 
 
 <kbd>speed</kbd> &nbsp; [neural_geometry/speed.py](neural_geometry/speed.py)
 
-Two benchmarks: a dense forward pass and a per-pixel ReLU region computation. The forward pass maps cleanly to matrix multiplies, so NumPy wins via BLAS. The region grid is loop-heavy per-pixel work, and Numba pulls ahead.
+Two benchmarks: a dense forward pass and a per-pixel ReLU region computation. The forward pass maps cleanly to matrix multiplies, so NumPy wins through BLAS. The region grid is loop-heavy per-pixel work, where Numba pulls ahead.
 
 ```
-forward pass, 200 samples, 2 > 32 > 32
+forward pass, 200 samples, 2 → 32 → 32
 
   python      30.91 ms
   numpy       0.0231 ms    1339x faster than python
