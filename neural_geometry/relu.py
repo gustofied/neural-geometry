@@ -345,15 +345,31 @@ def plot_confidence_map(geo, X, y):
     return fig
 
 
-def _save(fig, path):
-    import os as os
+def _save(fig, path, dpi=200):
+    import os
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    fig.savefig(path, dpi=200, facecolor=fig.get_facecolor(),
+    fig.savefig(path, dpi=dpi, facecolor=fig.get_facecolor(),
                 bbox_inches="tight", pad_inches=0.1)
     print(f"  saved {path}")
 
 
-def run_all(save=False):
+def _save_panel(ax, path, dpi=200):
+    """Save a single axes as its own figure, no title."""
+    import os
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    extent = ax.get_tightbbox(ax.figure.canvas.get_renderer()).transformed(
+        ax.figure.dpi_scale_trans.inverted())
+    # hide title temporarily
+    title = ax.get_title()
+    ax.set_title("")
+    ax.figure.savefig(path, dpi=dpi, facecolor=ax.figure.get_facecolor(),
+                      bbox_inches=extent.expanded(1.05, 1.05))
+    ax.set_title(title, color=FG, fontsize=10, fontweight="bold", pad=10,
+                 fontfamily="monospace")
+    print(f"  saved {path}")
+
+
+def run_all(save=False, gallery=False):
     import os as _os
     net, X, y, loss_history, acc_history = build()
     geo = compute_geometry(net, X)
@@ -371,6 +387,15 @@ def run_all(save=False):
         for name, fig in figs.items():
             _save(fig, _os.path.join(assets, f"relu_{name}.png"))
 
+    if gallery:
+        reg = figs["regions"]
+        for i, name in enumerate(["layer1", "layer2", "joint", "boundary"]):
+            _save_panel(reg.axes[i], _os.path.join(assets, f"relu_{name}.png"))
+
+        rad = figs["radial"]
+        _save_panel(rad.axes[0], _os.path.join(assets, "relu_logit.png"))
+        _save_panel(rad.axes[1], _os.path.join(assets, "relu_conf_radius.png"))
+
     for fig in figs.values():
         fig.show()
 
@@ -379,4 +404,7 @@ def run_all(save=False):
 
 if __name__ == "__main__":
     import os, sys
-    run_all(save="--save" in sys.argv)
+    run_all(
+        save="--save" in sys.argv,
+        gallery="--gallery" in sys.argv,
+    )
