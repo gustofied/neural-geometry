@@ -86,14 +86,14 @@ Along a fixed ray, the logit difference changes piecewise linearly, with kinks w
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
-Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). I wanted to understand what changes when only the last layer is treated probabilistically. The point-estimate model stays overconfident far from the training data, while the Bayesian last layer pulls predictions back toward 0.5 in sparse regions.
+Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). I wanted to understand what changes when only the last layer is treated probabilistically. The point-estimate model stays overconfident far from the training data, while the last-layer Laplace approximation pulls predictions back toward 0.5 in sparse regions.
 
 <p align="center"><em>MAP vs last-layer Laplace confidence</em></p>
 
 <table>
   <tr>
-    <td align="center"><img src="assets/bayes_map.png" width="100%"></td>
-    <td align="center"><img src="assets/bayes_llla.png" width="100%"></td>
+    <td align="center" width="35%"><img src="assets/bayes_map.png" width="100%"></td>
+    <td align="center" width="35%"><img src="assets/bayes_llla.png" width="100%"></td>
   </tr>
   <tr>
     <td align="center">MAP</td>
@@ -105,8 +105,8 @@ Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kri
 
 <table>
   <tr>
-    <td align="center"><img src="assets/bayes_probe_map.png" width="100%"></td>
-    <td align="center"><img src="assets/bayes_probe_llla.png" width="100%"></td>
+    <td align="center" width="35%"><img src="assets/bayes_probe_map.png" width="100%"></td>
+    <td align="center" width="35%"><img src="assets/bayes_probe_llla.png" width="100%"></td>
   </tr>
   <tr>
     <td align="center">MAP</td>
@@ -114,7 +114,7 @@ Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kri
   </tr>
 </table>
 
-MAP quickly returns to near-1 confidence away from the data. The last-layer Laplace approximation relaxes toward 0.5 and shows wider predictive spread in sparse regions.
+MAP quickly returns to near-1 confidence away from the data. The last-layer Laplace approximation relaxes toward 0.5 and shows wider predictive spread as you move into regions with little or no training data.
 
 <kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl1_geometry.py](neural_geometry/gl1_geometry.py)
 

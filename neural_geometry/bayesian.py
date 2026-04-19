@@ -97,7 +97,7 @@ def get_features(model, x):
         x = layer.forward(x)
     return x
 
-class DiagonalLastLayerLaplace:
+class LastLayerLaplace:
     """Diagonal Gaussian over the final linear layer.
     Precision per weight: 1/sigma_prior^2 + sum_i kappa_i * phi_ij^2
     where kappa_i = p_i(1 - p_i) is the logistic curvature."""
@@ -137,7 +137,7 @@ def build(prior_std=PRIOR_STD):
     X, y = make_blobs()
     net  = make_net()
     train(net, X, y)
-    llla = DiagonalLastLayerLaplace(net, X, prior_std=prior_std)
+    llla = LastLayerLaplace(net, X, prior_std=prior_std)
     return net, llla, X, y
 
 def _make_grid(X, margin=5.0, h=0.05):
@@ -174,8 +174,8 @@ PINK_GLOW  = "#ff4fa3"
 PINK_NEON  = "#ff0f7b"
 PINK_HOT   = "#ff7cc4"
 
-CLASS0     = "#d18a1f"
-CLASS1     = "#18a7c4"
+CLASS0     = "#c88040"
+CLASS1     = "#40a0b8"
 
 _CONF_CMAP = LinearSegmentedColormap.from_list("conf", [
     (0.00, "#ff5eb0"),
@@ -249,8 +249,8 @@ def plot_1d_probe(model, llla, x_range=(-9.0, 9.0), n_points=400, n_samples=256)
     fig, axes = plt.subplots(1, 2, figsize=(13, 4))
     fig.patch.set_facecolor(BG)
 
-    axes[0].plot(xs, map_conf, color=CLASS1, linewidth=1.8, alpha=0.08)
-    axes[0].plot(xs, map_conf, color=CLASS1, linewidth=0.9, alpha=0.9)
+    axes[0].plot(xs, map_conf, color=PINK_GLOW, linewidth=1.8, alpha=0.08)
+    axes[0].plot(xs, map_conf, color=PINK_NEON, linewidth=0.9, alpha=0.85)
     axes[0].axhline(0.5, color=FG, linewidth=0.6, linestyle="--", alpha=0.3)
     axes[0].set_ylim(0.45, 1.02)
     _clean_ax(axes[0], "MAP")
@@ -259,17 +259,17 @@ def plot_1d_probe(model, llla, x_range=(-9.0, 9.0), n_points=400, n_samples=256)
     axes[1].fill_between(xs,
                          np.clip(bay_conf - 3 * bay_std, 0.5, 1.0),
                          np.clip(bay_conf + 3 * bay_std, 0.5, 1.0),
-                         color=CLASS1, alpha=0.12)
-    axes[1].plot(xs, bay_conf, color=CLASS1, linewidth=1.8, alpha=0.08)
-    axes[1].plot(xs, bay_conf, color=CLASS1, linewidth=0.9, alpha=0.9)
+                         color=PINK_GLOW, alpha=0.10)
+    axes[1].plot(xs, bay_conf, color=PINK_GLOW, linewidth=1.8, alpha=0.08)
+    axes[1].plot(xs, bay_conf, color=PINK_NEON, linewidth=0.9, alpha=0.85)
     axes[1].axhline(0.5, color=FG, linewidth=0.6, linestyle="--", alpha=0.3)
     axes[1].set_ylim(0.45, 1.02)
     _clean_ax(axes[1], "LLLA")
     axes[1].set_xlabel("x", color="#444450", fontsize=8, fontfamily="monospace")
 
     for ax in axes:
-        ax.axvspan(-4.0, -2.0, color=CLASS0, alpha=0.06)
-        ax.axvspan( 2.0,  4.0, color=CLASS1, alpha=0.06)
+        ax.axvspan(-4.0, -2.0, color=CLASS0, alpha=0.05)
+        ax.axvspan( 2.0,  4.0, color=CLASS1, alpha=0.05)
 
     plt.tight_layout()
     return fig
@@ -284,7 +284,7 @@ def plot_prior_sweep(model, X, y, prior_stds=(0.3, 1.0, 3.0, 10.0)):
     fig.patch.set_facecolor(BG)
 
     for ax, s in zip(axes, prior_stds):
-        llla  = DiagonalLastLayerLaplace(model, X, prior_std=s)
+        llla  = LastLayerLaplace(model, X, prior_std=s)
         p_bay = llla.sample_probs(phi, n_samples=128).mean(axis=0)
         conf  = np.maximum(p_bay, 1.0 - p_bay).reshape(xx.shape)
         pred  = (p_bay > 0.5).reshape(xx.shape).astype(float)
