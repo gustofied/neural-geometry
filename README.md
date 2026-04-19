@@ -86,7 +86,7 @@ Along a fixed ray, the logit difference changes piecewise linearly, with kinks w
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
-Binary ReLU classifier with a diagonal last-layer Laplace approximation (LLLA), inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). The main comparison is MAP vs LLLA confidence: MAP remains overconfident far from the training data, while the Bayesian last layer pulls predictions back toward 0.5 in sparse regions. Includes confidence maps, a 1D probe through the data gap, and a prior-scale sweep.
+Binary ReLU classifier with a diagonal last-layer Laplace approximation (LLLA), inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). The point-estimate model stays overconfident far from the training data, while a simple last-layer Bayesian approximation learns to admit uncertainty away from data. Includes MAP vs LLLA confidence maps, a 1D probe through the data gap, and a prior-scale sweep.
 
 <kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl1_geometry.py](neural_geometry/gl1_geometry.py)
 
