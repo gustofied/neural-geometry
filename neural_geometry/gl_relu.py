@@ -1,8 +1,9 @@
 """
-gl1_geometry.py — ReLU region viewer
+gl_relu.py — interactive ReLU region viewer
 
-Move mouse over the field to light up the linear region under the cursor.
-The decision boundary glows red. Drag to pan, scroll to zoom.
+Explore the joint activation partition of a trained ReLU network.
+Move the mouse to highlight the region under the cursor.
+The decision boundary is overlaid in pink. Drag to pan, scroll to zoom.
 """
 import os, sys, ctypes
 import numpy as np
@@ -12,38 +13,7 @@ import glfw
 import glfw.GLFW as GLFW_CONSTANTS
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from relu import build
-
-
-# ── grid ───────────────────────────────────────────────────────────────────
-def build_grid(model, x_range, y_range, res):
-    print("  building grid…")
-    xs = np.linspace(*x_range, res)
-    ys = np.linspace(*y_range, res)
-    grid = np.c_[np.meshgrid(xs, ys)[0].ravel(), np.meshgrid(xs, ys)[1].ravel()]
-
-    # logit diff (before softmax)
-    x = grid
-    for l in model.layers[:-1]: x = l.forward(x)
-    logit_diff = x[:, 1] - x[:, 0]
-
-    # joint regions
-    model.forward(grid)
-    m1 = model.layers[1].x_in > 0
-    m2 = model.layers[3].x_in > 0
-    _, ids = np.unique(np.concatenate([m1, m2], axis=1), axis=0, return_inverse=True)
-
-    # region texture: region ID packed into RG channels (uint16 via uint8 pair)
-    r_lo = (ids % 256).astype(np.uint8)
-    r_hi = (ids // 256).astype(np.uint8)
-    region_tex = np.stack([r_lo, r_hi, np.zeros_like(r_lo), np.full_like(r_lo, 255)], axis=1)
-    region_tex = region_tex.reshape(res, res, 4)[::-1].copy()
-
-    # logit texture: float [0,1], 0.5 = decision boundary
-    logit_tex = np.clip((logit_diff + 12) / 24, 0, 1).astype(np.float32)
-    logit_tex = logit_tex.reshape(res, res)[::-1].copy()
-
-    return ids, region_tex, logit_tex
+from relu import build, compute_gl_data
 
 
 # ── GLSL ───────────────────────────────────────────────────────────────────
@@ -77,31 +47,41 @@ void main() {
     vec2 tuv   = (world - u_tex_min) / (u_tex_max - u_tex_min);
 
     if (any(lessThan(tuv, vec2(0.0))) || any(greaterThan(tuv, vec2(1.0)))) {
-        f_color = vec4(0.022, 0.022, 0.038, 1.0);
+        f_color = vec4(0.020, 0.020, 0.032, 1.0);
         return;
     }
 
     int  rid    = decode(tuv);
     vec2 ts     = 1.0 / vec2(textureSize(u_region, 0));
-    bool on_bnd = decode(tuv + vec2(ts.x, 0.0)) != rid
-               || decode(tuv + vec2(0.0, ts.y)) != rid;
+
+    // four-neighbor edge test
+    bool on_bnd = decode(tuv + vec2( ts.x, 0.0)) != rid
+               || decode(tuv + vec2(-ts.x, 0.0)) != rid
+               || decode(tuv + vec2(0.0,  ts.y)) != rid
+               || decode(tuv + vec2(0.0, -ts.y)) != rid;
 
     float logit = texture(u_logit, tuv).r;
     float d     = abs(logit - 0.5) * 2.0;
     float glow  = exp(-d * d * 22.0);
 
-    vec3 col = vec3(0.022, 0.025, 0.042);
+    // subtle region tint from hashed id
+    float h = fract(float(rid) * 0.618033988);
+    vec3 col = vec3(0.028, 0.030, 0.048) + vec3(h * 0.025, (1.0 - h) * 0.018, h * 0.02);
 
-    if (rid == u_hover)  col += vec3(0.22, 0.03, 0.26);
-    if (on_bnd)          col += vec3(0.08, 0.14, 0.12) * 0.22;
+    // hovered region
+    if (rid == u_hover) col += vec3(0.18, 0.025, 0.22);
 
-    col += vec3(0.96, 0.04, 0.28) * glow;
+    // region edges
+    if (on_bnd) col += vec3(0.12, 0.11, 0.10) * 0.18;
 
-    // auto-cursor dot — same pink, softer
+    // decision boundary glow
+    col += vec3(0.96, 0.04, 0.28) * glow * 0.7;
+
+    // auto-cursor dot
     if (u_auto_pos.x > -999.0) {
-        float dd   = length(world - u_auto_pos);
-        col += vec3(0.96, 0.04, 0.28) * exp(-dd * dd * 280.0) * 0.55;
-        col += vec3(0.96, 0.04, 0.28) * exp(-dd * dd * 40.0)  * 0.18;
+        float dd = length(world - u_auto_pos);
+        col += vec3(0.96, 0.04, 0.28) * exp(-dd * dd * 280.0) * 0.45;
+        col += vec3(0.96, 0.04, 0.28) * exp(-dd * dd * 40.0)  * 0.12;
     }
 
     f_color = vec4(col, 1.0);
@@ -206,9 +186,8 @@ def _upload(arr, internal, fmt, dtype, filter_=GL.GL_LINEAR):
 
 
 class Renderer:
-    def __init__(self, X, y, ids, region_tex, logit_tex,
-                 tex_min, tex_max, grid_res, x_range, y_range):
-        GL.glClearColor(0.022, 0.022, 0.038, 1.0)
+    def __init__(self, X, y, gl_data):
+        GL.glClearColor(0.020, 0.020, 0.032, 1.0)
         GL.glEnable(GL.GL_BLEND)
         GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
         GL.glEnable(GL.GL_PROGRAM_POINT_SIZE)
@@ -218,14 +197,15 @@ class Renderer:
         self.quad     = QuadMesh()
         self.points   = PointCloud(X, y)
 
-        self.t_region = _upload(region_tex, GL.GL_RGBA, GL.GL_RGBA,
+        self.t_region = _upload(gl_data["region_tex"], GL.GL_RGBA, GL.GL_RGBA,
                                 GL.GL_UNSIGNED_BYTE, GL.GL_NEAREST)
 
-        h, w = logit_tex.shape
+        logit = gl_data["logit_tex"]
+        h, w = logit.shape
         self.t_logit = GL.glGenTextures(1)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.t_logit)
         GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_R32F, w, h, 0,
-                        GL.GL_RED, GL.GL_FLOAT, logit_tex.tobytes())
+                        GL.GL_RED, GL.GL_FLOAT, logit.tobytes())
         for p, v in [(GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE),
                      (GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE),
                      (GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR),
@@ -233,12 +213,13 @@ class Renderer:
             GL.glTexParameteri(GL.GL_TEXTURE_2D, p, v)
         GL.glBindTexture(GL.GL_TEXTURE_2D, 0)
 
-        self.tex_min  = tex_min
-        self.tex_max  = tex_max
-        self.ids      = ids
-        self.res      = grid_res
-        self.x_range  = x_range
-        self.y_range  = y_range
+        xr, yr = gl_data["x_range"], gl_data["y_range"]
+        self.tex_min  = np.array([xr[0], yr[0]], dtype=np.float32)
+        self.tex_max  = np.array([xr[1], yr[1]], dtype=np.float32)
+        self.ids      = gl_data["ids"]
+        self.res      = gl_data["res"]
+        self.x_range  = xr
+        self.y_range  = yr
         self.hover    = -1
         self.auto_pos = np.array([-9999.0, -9999.0], np.float32)
 
@@ -285,15 +266,9 @@ class Renderer:
 # ── run ────────────────────────────────────────────────────────────────────
 def run():
     net, X, y, _, _ = build()
+    gl_data = compute_gl_data(net, X)
 
-    margin  = 0.6
-    xr = (X[:,0].min()-margin, X[:,0].max()+margin)
-    yr = (X[:,1].min()-margin, X[:,1].max()+margin)
-    RES = 600
-    ids, region_tex, logit_tex = build_grid(net, xr, yr, RES)
-    tex_min = np.array([xr[0], yr[0]], np.float32)
-    tex_max = np.array([xr[1], yr[1]], np.float32)
-
+    xr, yr = gl_data["x_range"], gl_data["y_range"]
     cx   = float((xr[0]+xr[1])/2)
     cy   = float((yr[0]+yr[1])/2)
     half = float(max(xr[1]-xr[0], yr[1]-yr[0]) * 0.6)
@@ -309,11 +284,11 @@ def run():
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GLFW_CONSTANTS.GLFW_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
-    window = glfw.create_window(WIN, WIN, "gl1", None, None)
+    window = glfw.create_window(WIN, WIN, "ReLU regions", None, None)
     glfw.make_context_current(window)
     glfw.swap_interval(0)
 
-    ren = Renderer(X, y, ids, region_tex, logit_tex, tex_min, tex_max, RES, xr, yr)
+    ren = Renderer(X, y, gl_data)
 
     def bounds():
         return (np.array([cx-half, cy-half], np.float32),
@@ -363,9 +338,8 @@ def run():
     old_t = glfw.get_time()
     while not glfw.window_should_close(window):
         glfw.poll_events()
-        if glfw.get_key(window, glfw.KEY_ESCAPE) == GLFW_CONSTANTS.GLFW_PRESS:
-            glfw.set_window_should_close(window, True)
         t = glfw.get_time(); dt = t - old_t; old_t = t
+
         if t - mouse_last_t[0] > 1.5:
             auto_wx = data_cx + 1.6 * np.sin(t * 0.31)
             auto_wy = data_cy + 1.6 * np.sin(t * 0.57)
@@ -373,7 +347,9 @@ def run():
             ren.auto_pos = np.array([auto_wx, auto_wy], np.float32)
         else:
             ren.auto_pos = np.array([-9999.0, -9999.0], np.float32)
-        glfw.set_window_title(window, f"gl1  |  FPS {1/dt if dt>0 else 0:.0f}")
+
+        fps = int(1/dt) if dt > 0 else 0
+        glfw.set_window_title(window, f"ReLU regions  |  {fps} fps")
         ren.draw(*bounds())
         glfw.swap_buffers(window)
 

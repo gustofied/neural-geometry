@@ -168,6 +168,43 @@ def compute_geometry(model, X, h=0.008):
     }
 
 
+def compute_gl_data(model, X, margin=0.6, res=600, logit_scale=12.0):
+    """Precompute textures and region IDs for the GL viewer."""
+    xr = (float(X[:, 0].min() - margin), float(X[:, 0].max() + margin))
+    yr = (float(X[:, 1].min() - margin), float(X[:, 1].max() + margin))
+
+    xs = np.linspace(*xr, res)
+    ys = np.linspace(*yr, res)
+    xx, yy = np.meshgrid(xs, ys)
+    grid = np.c_[xx.ravel(), yy.ravel()]
+
+    logit_diff = model.logits(grid)[:, 1] - model.logits(grid)[:, 0]
+
+    model.forward(grid)
+    m1 = model.layers[1].x_in > 0
+    m2 = model.layers[3].x_in > 0
+    _, ids = np.unique(np.concatenate([m1, m2], axis=1), axis=0, return_inverse=True)
+
+    r_lo = (ids % 256).astype(np.uint8)
+    r_hi = (ids // 256).astype(np.uint8)
+    region_tex = np.stack(
+        [r_lo, r_hi, np.zeros_like(r_lo), np.full_like(r_lo, 255)], axis=1
+    ).reshape(res, res, 4)[::-1].copy()
+
+    logit_tex = np.clip(
+        (logit_diff + logit_scale) / (2 * logit_scale), 0, 1
+    ).astype(np.float32).reshape(res, res)[::-1].copy()
+
+    return {
+        "ids": ids,
+        "region_tex": region_tex,
+        "logit_tex": logit_tex,
+        "x_range": xr,
+        "y_range": yr,
+        "res": res,
+    }
+
+
 BG         = "#07070d"
 FG         = "#c0c0d0"
 
@@ -359,7 +396,6 @@ def _save_panel(ax, path, dpi=200):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     extent = ax.get_tightbbox(ax.figure.canvas.get_renderer()).transformed(
         ax.figure.dpi_scale_trans.inverted())
-    # hide title temporarily
     title = ax.get_title()
     ax.set_title("")
     ax.figure.savefig(path, dpi=dpi, facecolor=ax.figure.get_facecolor(),
