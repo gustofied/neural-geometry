@@ -52,33 +52,33 @@ activation-region map, 600×600, 32 hidden units
 
 A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the decision boundary emerges from that composed structure.
 
-Layerwise regions, their joint partition, and the resulting decision boundary:
+<p align="center"><em>Layerwise regions, their joint partition, and the resulting decision boundary</em></p>
 
 <table>
   <tr>
-    <td align="center"><img src="assets/relu_layer1.png" width="100%"></td>
-    <td align="center"><img src="assets/relu_layer2.png" width="100%"></td>
-    <td align="center"><img src="assets/relu_joint.png" width="100%"></td>
-    <td align="center"><img src="assets/relu_boundary.png" width="100%"></td>
+    <td align="center" valign="middle"><img src="assets/relu_layer1.png" width="100%"></td>
+    <td align="center" valign="middle"><img src="assets/relu_layer2.png" width="100%"></td>
+    <td align="center" valign="middle"><img src="assets/relu_joint.png" width="100%"></td>
+    <td align="center" valign="middle"><img src="assets/relu_boundary.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center"><sub>Layer 1</sub></td>
-    <td align="center"><sub>Layer 2</sub></td>
-    <td align="center"><sub>Joint partition</sub></td>
-    <td align="center"><sub>Decision boundary</sub></td>
+    <td align="center" valign="middle"><sub>Layer 1</sub></td>
+    <td align="center" valign="middle"><sub>Layer 2</sub></td>
+    <td align="center" valign="middle"><sub>Joint partition</sub></td>
+    <td align="center" valign="middle"><sub>Decision boundary</sub></td>
   </tr>
 </table>
 
-Radial probes through the trained network:
+<p align="center"><em>Radial probes through the trained network</em></p>
 
 <table>
   <tr>
-    <td align="center"><img src="assets/relu_logit.png" width="100%"></td>
-    <td align="center"><img src="assets/relu_conf_radius.png" width="100%"></td>
+    <td align="center" valign="middle"><img src="assets/relu_logit.png" width="100%"></td>
+    <td align="center" valign="middle"><img src="assets/relu_conf_radius.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center"><sub>Logit difference vs radius</sub></td>
-    <td align="center"><sub>Confidence vs radius</sub></td>
+    <td align="center" valign="middle"><sub>Logit difference vs radius</sub></td>
+    <td align="center" valign="middle"><sub>Confidence vs radius</sub></td>
   </tr>
 </table>
 
