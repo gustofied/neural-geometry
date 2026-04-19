@@ -8,7 +8,7 @@ SCRIPTS = {
     "simple":   ("simple neural network",                            "neural_geometry/simple.py"),
     "speed":    ("forward pass and linear-region benchmark",            "neural_geometry/speed.py"),
     "relu":     ("layerwise ReLU regions and decision boundary",     "neural_geometry/relu.py"),
-    "bayesian": ("MAP vs last-layer Laplace uncertainty",             "neural_geometry/bayesian.py"),
+    "bayesian": ("MAP vs last-layer Laplace approximation",           "neural_geometry/bayesian.py"),
     "regions":  ("live ReLU region viewer",                          "neural_geometry/gl_regions.py"),
 }
 

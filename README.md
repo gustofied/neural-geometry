@@ -9,6 +9,7 @@ Building intuition for neural networks through simple models, visualization, and
 ##### Setup
 
 ```bash
+brew install uv
 uv sync
 ```
 
@@ -23,7 +24,7 @@ uv run neural-geometry [command]
 | `simple` | simple neural network |
 | `speed` | forward pass and linear-region benchmark |
 | `relu` | layerwise ReLU regions and decision boundary |
-| `bayesian` | MAP vs last-layer Laplace uncertainty  |
+| `bayesian` | MAP vs last-layer Laplace approximation |
 | `regions` | OpenGL ReLU region viewer |
 
 ---
@@ -83,11 +84,11 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
   </tr>
 </table>
 
-Along a fixed ray, the logit difference changes piecewise linearly, with kinks where the activation pattern changes. Confidence drops near boundary crossings but stays high almost everywhere else, importantly including far from the data.
+Along a fixed ray, the network moves through a sequence of activation regions. Inside each region the network is just an affine map, so the logit difference changes linearly with radius; the visible kinks mark where the ray crosses into a new region. Confidence dips near those crossings, but stays high almost everywhere else, importantly including far from the data.
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
-Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). I wanted to understand what changes when only the last layer is treated probabilistically. The point-estimate model stays overconfident far from the training data, while the last-layer Laplace approximation pulls confidence back toward 0.5 in sparse regions.
+Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). This started from the overconfidence issue visible above: the point-estimate network stays highly confident even far from the training data. Here, only the last layer is treated probabilistically, which is enough to pull predictions back toward 0.5 in sparse regions.
 
 <p align="center"><em>MAP vs last-layer Laplace confidence</em></p>
 
@@ -119,6 +120,8 @@ MAP quickly returns to near-1 confidence away from the data. The last-layer Lapl
 
 <kbd>regions</kbd> &nbsp; [neural_geometry/gl_regions.py](neural_geometry/gl_regions.py)
 
-Live OpenGL viewer that trains a ReLU network and renders its joint activation regions in real time. As training progresses, the network reorganizes the plane into linear regions, while the decision boundary settles into a curved shape built from local linear pieces. I leaned a bit stylized here so the partition reads more clearly in motion; the point is to watch the regions reorganize and the decision boundary gradually lock into place.
+OpenGL viewer for a ReLU network in training, showing how its joint activation regions evolve over time. As training progresses, the plane is reorganized into linear regions, while the decision boundary settles into a curved shape built from local linear pieces.
+
+I made this partly because I wanted to use OpenGL for something scientific rather than purely graphical. With many regions, many points, and continuous motion, it starts to feel like the right tool. It is a bit stylized, but the point is to make the reorganization of the partition readable in motion.
 
 <img src="assets/regions.gif" width="100%">
