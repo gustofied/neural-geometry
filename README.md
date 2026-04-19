@@ -22,7 +22,7 @@ uv run neural-geometry [command]
 | `speed` | forward pass and linear-region benchmark |
 | `relu` | layerwise ReLU regions and decision boundary |
 | `bayesian` | MAP vs last-layer Laplace uncertainty  |
-| `regions` | live ReLU region viewer |
+| `regions` | OpenGL ReLU region viewer |
 
 ---
 
@@ -117,4 +117,4 @@ MAP quickly returns to near-1 confidence away from the data. The last-layer Lapl
 
 <kbd>regions</kbd> &nbsp; [neural_geometry/gl_regions.py](neural_geometry/gl_regions.py)
 
-Live OpenGL viewer that trains a ReLU network and renders the joint activation partition in real time. The network's linear regions reorganize during training, and the decision boundary gradually settles into a curved shape assembled from local linear pieces. Drag to pan, scroll to zoom, space to pause.
+Live OpenGL viewer that trains a ReLU network and renders its joint activation regions in real time. As training progresses, the network reorganizes the plane into linear regions, while the decision boundary settles into a curved shape built from local linear pieces. This is the interactive counterpart to the ReLU geometry plots above. Drag to pan, scroll to zoom, and press space to pause.
