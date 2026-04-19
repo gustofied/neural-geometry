@@ -50,7 +50,7 @@ activation-region map, 600×600, 32 hidden units
 
 <kbd>relu</kbd> &nbsp; [neural_geometry/relu.py](neural_geometry/relu.py)
 
-A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the decision boundary emerges from that composed structure.
+A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary.
 
 <p align="center"><em>Layerwise regions, their joint partition, and the resulting decision boundary</em></p>
 
@@ -62,10 +62,10 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
     <td align="center" valign="middle"><img src="assets/relu_boundary.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center" height="1"><sub>Layer 1</sub></td>
-    <td align="center" height="1"><sub>Layer 2</sub></td>
-    <td align="center" height="1"><sub>Joint partition</sub></td>
-    <td align="center" height="1"><sub>Decision boundary</sub></td>
+    <td align="center" height="0.5"><sub>Layer 1</sub></td>
+    <td align="center" height="0.5"><sub>Layer 2</sub></td>
+    <td align="center" height="0.5"><sub>Joint partition</sub></td>
+    <td align="center" height="0.5"><sub>Decision boundary</sub></td>
   </tr>
 </table>
 
@@ -77,8 +77,8 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
     <td align="center" valign="middle"><img src="assets/relu_conf_radius.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center" height="1"><sub>Logit difference vs radius</sub></td>
-    <td align="center" height="1"><sub>Confidence vs radius</sub></td>
+    <td align="center" height="0.5"><sub>Logit difference vs radius</sub></td>
+    <td align="center" height="0.5"><sub>Confidence vs radius</sub></td>
   </tr>
 </table>
 
