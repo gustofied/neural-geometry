@@ -117,4 +117,4 @@ MAP quickly returns to near-1 confidence away from the data. The last-layer Lapl
 
 <kbd>regions</kbd> &nbsp; [neural_geometry/gl_regions.py](neural_geometry/gl_regions.py)
 
-Live OpenGL viewer that trains a ReLU network and renders its joint activation regions in real time. As training progresses, the network reorganizes the plane into linear regions, while the decision boundary settles into a curved shape built from local linear pieces.
+Live OpenGL viewer that trains a ReLU network and renders its joint activation regions in real time. As training progresses, the network reorganizes the plane into linear regions, while the decision boundary settles into a curved shape built from local linear pieces. I leaned a bit stylized here so the partition reads more clearly in motion; the point is to watch the regions reorganize and the decision boundary gradually lock into place.
