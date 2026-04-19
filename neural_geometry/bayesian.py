@@ -1,5 +1,5 @@
 """
-nn2_binary.py — toy adaptation inspired by Kristiadi et al. 2020
+bayesian.py — toy adaptation inspired by Kristiadi et al. 2020
 
 Binary logistic classifier (single sigmoid output) on two Gaussian blobs.
 Diagonal last-layer Laplace approximation (LLLA).
@@ -12,12 +12,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ── palette (matches nn1_geometry) ───────────────────────────────────────
-BG         = "#0c0c10"
+# ── palette (matches relu.py) ────────────────────────────────────────────
+BG         = "#0a0a12"
 FG         = "#b8b8c8"
-BOUNDARY_C = "#e8004a"
-C0         = "#b87c00"
-C1         = "#1a7a8a"
+BOUNDARY_C = "#f50a47"
+C0         = "#ff9e00"
+C1         = "#00b8d1"
 
 
 # ── datasets ──────────────────────────────────────────────────────────────

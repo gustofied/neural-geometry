@@ -12,7 +12,7 @@ import glfw
 import glfw.GLFW as GLFW_CONSTANTS
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from nn1_geometry import build
+from relu import build
 
 
 # ── grid ───────────────────────────────────────────────────────────────────

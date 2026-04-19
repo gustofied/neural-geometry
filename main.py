@@ -7,8 +7,8 @@ app = typer.Typer(help="neural-geometry visualizations")
 SCRIPTS = {
     "simple":   ("simple neural network",                            "neural_geometry/simple.py"),
     "speed":    ("python vs numpy vs numba, forward pass and activation-region map","neural_geometry/speed.py"),
-    "relu":     ("radial bands and activation regions",              "neural_geometry/nn1_geometry.py"),
-    "bayesian": ("MAP vs LLLA confidence maps",                      "neural_geometry/nn2_binary.py"),
+    "relu":     ("radial bands and activation regions",              "neural_geometry/relu.py"),
+    "bayesian": ("MAP vs LLLA confidence maps",                      "neural_geometry/bayesian.py"),
     "relu-gl":  ("interactive linear regions",                       "neural_geometry/gl1_geometry.py"),
     "bayes-gl": ("confidence field and posterior boundaries",        "neural_geometry/gl2_binary.py"),
 }
