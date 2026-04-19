@@ -32,17 +32,25 @@ def _hash_regions(m1, m2):
 
 
 def _id_to_rgb(ids):
-    """Hash region IDs to pastel RGB on CPU."""
+    """Hash region IDs to bright pastel RGB."""
     h = (ids.astype(np.float32) * 0.61803398875) % 1.0
-    r = 0.30 + 0.60 * (0.5 + 0.5 * np.sin(2*np.pi*h))
-    g = 0.25 + 0.60 * (0.5 + 0.5 * np.sin(2*np.pi*h + 2.1))
-    b = 0.30 + 0.60 * (0.5 + 0.5 * np.sin(2*np.pi*h + 4.2))
+    r = 0.50 + 0.45 * (0.5 + 0.5 * np.sin(2*np.pi*h))
+    g = 0.50 + 0.45 * (0.5 + 0.5 * np.sin(2*np.pi*h + 2.1))
+    b = 0.50 + 0.45 * (0.5 + 0.5 * np.sin(2*np.pi*h + 4.2))
     rgb = np.stack([r, g, b], axis=-1)
     return (255 * np.clip(rgb, 0, 1)).astype(np.uint8)
 
 
+def _pack_ids(ids):
+    """Pack hashed IDs into RG channels for GPU edge detection."""
+    ids16 = (ids & np.uint32(65535)).astype(np.uint32)
+    lo = (ids16 & 255).astype(np.uint8)
+    hi = ((ids16 >> 8) & 255).astype(np.uint8)
+    return np.stack([lo, hi, np.zeros_like(lo), np.full_like(lo, 255)], axis=-1)
+
+
 def compute_frame(model, grid, res):
-    """Single forward pass, returns color texture + logit texture."""
+    """Single forward pass, returns id texture + color texture + logit texture."""
     z1 = model.layers[0].forward(grid)
     a1 = model.layers[1].forward(z1)
     z2 = model.layers[2].forward(a1)
@@ -52,11 +60,12 @@ def compute_frame(model, grid, res):
     logit_diff = z3[:, 1] - z3[:, 0]
     ids = _hash_regions(z1 > 0, z2 > 0)
 
+    id_tex    = _pack_ids(ids).reshape(res, res, 4)[::-1].copy()
     color_tex = _id_to_rgb(ids).reshape(res, res, 3)[::-1].copy()
     logit_tex = np.clip((logit_diff + 12) / 24, 0, 1).astype(np.float32)
     logit_tex = logit_tex.reshape(res, res)[::-1].copy()
 
-    return color_tex, logit_tex
+    return id_tex, color_tex, logit_tex
 
 
 # ── GLSL ─────────────────────────────────────────────────────────────────
@@ -72,12 +81,18 @@ void main() {
 
 FRAG_SRC = """
 #version 330 core
+uniform sampler2D u_region_id;
 uniform sampler2D u_color;
 uniform sampler2D u_logit;
 uniform vec2      u_view_min, u_view_max, u_tex_min, u_tex_max;
 uniform float     u_boundary_str;
 in  vec2 v_uv;
 out vec4 f_color;
+
+int decode(vec2 uv) {
+    vec4 c = texture(u_region_id, uv);
+    return int(c.r * 255.0 + 0.5) + 256 * int(c.g * 255.0 + 0.5);
+}
 
 void main() {
     vec2 world = mix(u_view_min, u_view_max, v_uv);
@@ -89,28 +104,27 @@ void main() {
     }
 
     vec3 region_col = texture(u_color, tuv).rgb;
-    vec2 ts = 1.0 / vec2(textureSize(u_color, 0));
+    int  rid = decode(tuv);
+    vec2 ts  = 1.0 / vec2(textureSize(u_region_id, 0));
 
-    // edge detection on color difference
-    vec3 cr = texture(u_color, tuv + vec2(ts.x, 0.0)).rgb;
-    vec3 cl = texture(u_color, tuv - vec2(ts.x, 0.0)).rgb;
-    vec3 cu = texture(u_color, tuv + vec2(0.0, ts.y)).rgb;
-    vec3 cd = texture(u_color, tuv - vec2(0.0, ts.y)).rgb;
-    float edge = length(cr - region_col) + length(cl - region_col)
-               + length(cu - region_col) + length(cd - region_col);
-    bool on_bnd = edge > 0.01;
+    // true region boundary from ID discontinuity
+    bool on_bnd = decode(tuv + vec2( ts.x, 0.0)) != rid
+               || decode(tuv + vec2(-ts.x, 0.0)) != rid
+               || decode(tuv + vec2(0.0,  ts.y)) != rid
+               || decode(tuv + vec2(0.0, -ts.y)) != rid;
 
     float logit = texture(u_logit, tuv).r;
     float d     = abs(logit - 0.5) * 2.0;
     float glow  = exp(-d * d * 22.0);
 
-    vec3 col = region_col;
+    // bright region fill
+    vec3 col = region_col * 0.88;
 
-    // white region edges
-    if (on_bnd) col = mix(col, vec3(0.95, 0.93, 0.88), 0.72);
+    // crisp white edges
+    if (on_bnd) col = mix(col, vec3(0.97, 0.96, 0.93), 0.82);
 
-    // decision boundary: thin, grows with training
-    col += vec3(0.96, 0.04, 0.28) * glow * 0.28 * u_boundary_str;
+    // decision boundary: thin pink, emerges with training
+    col += vec3(0.96, 0.04, 0.28) * glow * 0.20 * u_boundary_str;
 
     f_color = vec4(col, 1.0);
 }
@@ -269,7 +283,9 @@ def run():
     points   = PointCloud(X, y)
 
     # initial textures
-    color_tex, logit_tex = compute_frame(net, grid, RES)
+    id_tex, color_tex, logit_tex = compute_frame(net, grid, RES)
+    t_rid   = make_tex(GL.GL_RGBA, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
+                       RES, RES, id_tex, GL.GL_NEAREST)
     t_color = make_tex(GL.GL_RGB, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
                        RES, RES, color_tex, GL.GL_NEAREST)
     t_logit = make_tex(GL.GL_R32F, GL.GL_RED, GL.GL_FLOAT,
@@ -306,10 +322,11 @@ def run():
                     layer.biases  -= lr * layer.grad_b
 
     def refresh_textures():
-        nonlocal color_tex, logit_tex
-        color_tex, logit_tex = compute_frame(net, grid, RES)
-        update_tex(t_color, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, RES, RES, color_tex)
-        update_tex(t_logit, GL.GL_RED, GL.GL_FLOAT, RES, RES, logit_tex)
+        nonlocal id_tex, color_tex, logit_tex
+        id_tex, color_tex, logit_tex = compute_frame(net, grid, RES)
+        update_tex(t_rid,   GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, RES, RES, id_tex)
+        update_tex(t_color, GL.GL_RGB,  GL.GL_UNSIGNED_BYTE, RES, RES, color_tex)
+        update_tex(t_logit, GL.GL_RED,  GL.GL_FLOAT,         RES, RES, logit_tex)
 
     def on_key(win, key, sc, action, mods):
         if action != glfw.PRESS:
@@ -360,7 +377,7 @@ def run():
                 refresh_textures()
                 last_tex_t = now
 
-        boundary_str = min(epoch[0] / 400.0, 1.0)
+        boundary_str = float(np.clip((epoch[0] - 30) / 250.0, 0.0, 1.0))
         acc = (net.predict(X) == y).mean() if epoch[0] > 0 else 0.0
         status = "paused" if paused[0] else "training"
         glfw.set_window_title(window,
@@ -371,11 +388,14 @@ def run():
 
         GL.glUseProgram(prog)
         GL.glActiveTexture(GL.GL_TEXTURE0)
-        GL.glBindTexture(GL.GL_TEXTURE_2D, t_color)
-        GL.glUniform1i(GL.glGetUniformLocation(prog, "u_color"), 0)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, t_rid)
+        GL.glUniform1i(GL.glGetUniformLocation(prog, "u_region_id"), 0)
         GL.glActiveTexture(GL.GL_TEXTURE1)
+        GL.glBindTexture(GL.GL_TEXTURE_2D, t_color)
+        GL.glUniform1i(GL.glGetUniformLocation(prog, "u_color"), 1)
+        GL.glActiveTexture(GL.GL_TEXTURE2)
         GL.glBindTexture(GL.GL_TEXTURE_2D, t_logit)
-        GL.glUniform1i(GL.glGetUniformLocation(prog, "u_logit"), 1)
+        GL.glUniform1i(GL.glGetUniformLocation(prog, "u_logit"), 2)
         GL.glUniform2f(GL.glGetUniformLocation(prog, "u_view_min"), *vmin)
         GL.glUniform2f(GL.glGetUniformLocation(prog, "u_view_max"), *vmax)
         GL.glUniform2f(GL.glGetUniformLocation(prog, "u_tex_min"),  *tex_min)
@@ -390,7 +410,7 @@ def run():
 
         glfw.swap_buffers(window)
 
-    GL.glDeleteTextures(2, [t_color, t_logit])
+    GL.glDeleteTextures(3, [t_rid, t_color, t_logit])
     GL.glDeleteProgram(prog)
     GL.glDeleteProgram(prog_pts)
     glfw.terminate()
