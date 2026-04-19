@@ -19,13 +19,13 @@ uv sync
 uv run neural-geometry [command]
 ```
 
-| command | description |
-|---|---|
-| `simple` | simple neural network |
-| `speed` | forward pass and linear-region benchmark |
-| `relu` | layerwise ReLU regions and decision boundary |
-| `bayesian` | MAP vs last-layer Laplace approximation |
-| `regions` | OpenGL ReLU region viewer |
+| command    | description                                  |
+| ---------- | -------------------------------------------- |
+| `simple`   | simple neural network                        |
+| `speed`    | forward pass and linear-region benchmark     |
+| `relu`     | layerwise ReLU regions and decision boundary |
+| `bayesian` | MAP vs last-layer Laplace approximation      |
+| `regions`  | OpenGL ReLU region viewer                    |
 
 ---
 
@@ -52,7 +52,7 @@ activation-region map, 600×600, 32 hidden units
 
 <kbd>relu</kbd> &nbsp; [neural_geometry/relu.py](neural_geometry/relu.py)
 
-A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the resulting decision boundary emerges from that composed structure.
+A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the resulting decision boundary emerges from that structure.
 
 <p align="center"><em>Layerwise regions, their joint partition, and the resulting decision boundary</em></p>
 
@@ -122,6 +122,6 @@ MAP quickly returns to near-1 confidence away from the data. The last-layer Lapl
 
 OpenGL viewer for a ReLU network in training, showing how its joint activation regions evolve over time. As training progresses, the plane is reorganized into linear regions, while the decision boundary settles into a curved shape built from local linear pieces.
 
-I made this partly because I wanted to use OpenGL for something scientific rather than purely graphical. With many regions, many points, and continuous motion, it starts to feel like the right tool. It is a bit stylized, but the point is to make the reorganization of the partition readable in motion.
+I made this partly because I have been learning OpenGL and wanted to use it on something. It felt like a good fit here: when you want to render many points, and do some computation, a graphics API starts to make a lot of sense. The viewer The viewer is very much hacked together, but it's using principles I've been learning for OpenGL, and I thought it was fun.
 
 <img src="assets/regions.gif" width="100%">
