@@ -98,9 +98,7 @@ def get_features(model, x):
     return x
 
 class LastLayerLaplace:
-    """Diagonal Gaussian over the final linear layer.
-    Precision per weight: 1/sigma_prior^2 + sum_i kappa_i * phi_ij^2
-    where kappa_i = p_i(1 - p_i) is the logistic curvature."""
+    """Diagonal Gaussian approximation over the final linear layer."""
 
     def __init__(self, model, X_train, prior_std=1.0):
         last = model.layers[-2]
