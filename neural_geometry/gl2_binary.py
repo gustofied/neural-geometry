@@ -32,7 +32,7 @@ def build_grids(model, bll, x_range, y_range, res, n_samples=200):
 
     p_map = model.forward(grid).flatten()
     phi   = get_features(model, grid)
-    p_bll = bll.sample(phi, n_samples=n_samples).mean(axis=0)
+    p_bll = bll.sample_probs(phi, n_samples=n_samples).mean(axis=0)
 
     # flip: OpenGL bottom-left origin
     return (p_map.reshape(res, res)[::-1].copy().astype(np.float32),

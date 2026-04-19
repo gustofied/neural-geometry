@@ -21,7 +21,7 @@ uv run neural-geometry [command]
 | `simple` | simple neural network |
 | `speed` | forward pass and linear-region benchmark |
 | `relu` | layerwise ReLU regions and decision boundary |
-| `bayesian` | MAP vs LLLA confidence maps |
+| `bayesian` | MAP vs last-layer Laplace uncertainty |
 | `relu-gl` | interactive linear regions |
 | `bayes-gl` | confidence field and posterior boundaries |
 
@@ -86,7 +86,7 @@ Along a fixed ray, the logit difference changes piecewise linearly, with kinks w
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
-Binary classifier with a diagonal last-layer Laplace approximation (LLLA), inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). MAP vs LLLA confidence maps, a 1D confidence probe along the x-axis, and a prior-std sweep. The MAP network stays confident far from training data; the Bayesian last layer pulls confidence back toward 0.5 where data is sparse.
+Binary ReLU classifier with a diagonal last-layer Laplace approximation (LLLA), inspired by [Kristiadi et al. 2020](https://arxiv.org/abs/2002.10118). The main comparison is MAP vs LLLA confidence: MAP remains overconfident far from the training data, while the Bayesian last layer pulls predictions back toward 0.5 in sparse regions. Includes confidence maps, a 1D probe through the data gap, and a prior-scale sweep.
 
 <kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl1_geometry.py](neural_geometry/gl1_geometry.py)
 
