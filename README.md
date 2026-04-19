@@ -50,7 +50,19 @@ activation-region map, 600×600, 32 hidden units
 
 <kbd>relu</kbd> &nbsp; [neural_geometry/relu.py](neural_geometry/relu.py)
 
-A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the output boundary emerges from that composed structure.
+A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the decision boundary emerges from that composed structure.
+
+<p>
+<img src="assets/relu_regions.png" width="100%">
+</p>
+
+<p>
+<img src="assets/relu_training.png" width="46%"> <img src="assets/relu_radial.png" width="50%">
+</p>
+
+<p>
+<img src="assets/relu_confidence.png" width="28%">
+</p>
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 

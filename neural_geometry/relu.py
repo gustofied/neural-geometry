@@ -261,7 +261,7 @@ def plot_training_curves(loss_history, acc_history):
     _clean_ax(ax2, "ACCURACY")
 
     plt.tight_layout()
-    plt.show()
+    return fig
 
 
 def plot_decision_boundary(geo, X, y):
@@ -271,7 +271,7 @@ def plot_decision_boundary(geo, X, y):
     _scatter_data(ax, X, y)
     _clean_ax(ax, "DECISION BOUNDARY")
     plt.tight_layout()
-    plt.show()
+    return fig
 
 
 def plot_regions(geo, X, y):
@@ -293,7 +293,7 @@ def plot_regions(geo, X, y):
     _clean_ax(axes[3], "DECISION BOUNDARY")
 
     plt.tight_layout()
-    plt.show()
+    return fig
 
 
 def plot_radial_probe(model, n_radii=8, r_max=5.0, n_points=300):
@@ -325,7 +325,7 @@ def plot_radial_probe(model, n_radii=8, r_max=5.0, n_points=300):
     axes[1].set_ylim(0.4, 1.02)
 
     plt.tight_layout()
-    plt.show()
+    return fig
 
 
 def plot_confidence_map(geo, X, y):
@@ -340,18 +340,43 @@ def plot_confidence_map(geo, X, y):
     cb.ax.tick_params(colors="#333340", labelsize=6)
     cb.outline.set_edgecolor("#101018")  # ty:ignore[call-non-callable]
     _scatter_data(ax, X, y, s=6, alpha=0.7)
-    _clean_ax(ax, "MAX-SOFTMAX CONFIDENCE")
+    _clean_ax(ax, "SOFTMAX CONFIDENCE")
     plt.tight_layout()
-    plt.show()
+    return fig
 
-def run_all():
+
+def _save(fig, path):
+    import os as os
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    fig.savefig(path, dpi=200, facecolor=fig.get_facecolor(),
+                bbox_inches="tight", pad_inches=0.1)
+    print(f"  saved {path}")
+
+
+def run_all(save=False):
+    import os as _os
     net, X, y, loss_history, acc_history = build()
-    plot_training_curves(loss_history, acc_history)
     geo = compute_geometry(net, X)
-    plot_radial_probe(net)
-    plot_confidence_map(geo, X, y)
-    plot_regions(geo, X, y)
+
+    assets = _os.path.join(_os.path.dirname(_os.path.dirname(__file__)), "assets")
+
+    figs = {
+        "training":   plot_training_curves(loss_history, acc_history),
+        "radial":     plot_radial_probe(net),
+        "confidence": plot_confidence_map(geo, X, y),
+        "regions":    plot_regions(geo, X, y),
+    }
+
+    if save:
+        for name, fig in figs.items():
+            _save(fig, _os.path.join(assets, f"relu_{name}.png"))
+
+    for fig in figs.values():
+        fig.show()
+
+    plt.show()
 
 
 if __name__ == "__main__":
-    run_all()
+    import os, sys
+    run_all(save="--save" in sys.argv)
