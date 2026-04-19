@@ -82,7 +82,7 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
   </tr>
 </table>
 
-Along a fixed ray, the logit difference changes piecewise linearly, with kinks where the activation pattern changes. Confidence drops near boundary crossings but stays high almost everywhere else, including far from the data.
+Along a fixed ray, the logit difference changes piecewise linearly, with kinks where the activation pattern changes. Confidence drops near boundary crossings but stays high almost everywhere else, importantly including far from the data.
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
