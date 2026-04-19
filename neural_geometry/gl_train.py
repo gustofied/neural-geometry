@@ -34,9 +34,9 @@ def _hash_regions(m1, m2):
 def _id_to_rgb(ids):
     """Hash region IDs to pastel RGB on CPU."""
     h = (ids.astype(np.float32) * 0.61803398875) % 1.0
-    r = 0.35 + 0.50 * (0.5 + 0.5 * np.sin(2*np.pi*h))
-    g = 0.30 + 0.50 * (0.5 + 0.5 * np.sin(2*np.pi*h + 2.1))
-    b = 0.35 + 0.50 * (0.5 + 0.5 * np.sin(2*np.pi*h + 4.2))
+    r = 0.30 + 0.60 * (0.5 + 0.5 * np.sin(2*np.pi*h))
+    g = 0.25 + 0.60 * (0.5 + 0.5 * np.sin(2*np.pi*h + 2.1))
+    b = 0.30 + 0.60 * (0.5 + 0.5 * np.sin(2*np.pi*h + 4.2))
     rgb = np.stack([r, g, b], axis=-1)
     return (255 * np.clip(rgb, 0, 1)).astype(np.uint8)
 
@@ -104,13 +104,13 @@ void main() {
     float d     = abs(logit - 0.5) * 2.0;
     float glow  = exp(-d * d * 22.0);
 
-    vec3 col = region_col * 0.75;
+    vec3 col = region_col;
 
     // white region edges
-    if (on_bnd) col = mix(col, vec3(0.92, 0.90, 0.86), 0.55);
+    if (on_bnd) col = mix(col, vec3(0.95, 0.93, 0.88), 0.72);
 
-    // decision boundary: grows with training
-    col += vec3(0.96, 0.04, 0.28) * glow * 0.5 * u_boundary_str;
+    // decision boundary: thin, grows with training
+    col += vec3(0.96, 0.04, 0.28) * glow * 0.28 * u_boundary_str;
 
     f_color = vec4(col, 1.0);
 }
