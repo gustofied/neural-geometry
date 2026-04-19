@@ -122,6 +122,6 @@ MAP quickly returns to near-1 confidence away from the data. The last-layer Lapl
 
 OpenGL viewer for a ReLU network in training, showing how its joint activation regions evolve over time. As training progresses, the plane is reorganized into linear regions, while the decision boundary settles into a curved shape built from local linear pieces.
 
-I made this partly because I have been learning OpenGL and wanted to use it on something. It felt like a good fit here: when you want to render many points, and do some computation, a graphics API starts to make a lot of sense. The viewer The viewer is very much hacked together, but it's using principles I've been learning for OpenGL, and I thought it was fun.
+I made this largely because I have been learning OpenGL and wanted to use it on something. It felt like a good fit here: when you want to render many points, and do some computation, a graphics API starts to make a lot of sense. The viewer is very much hacked together, but it's using principles I've been learning for OpenGL, and I thought it was fun, and fitting.
 
 <img src="assets/regions.gif" width="100%">
