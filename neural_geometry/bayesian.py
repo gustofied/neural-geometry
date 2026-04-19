@@ -1,20 +1,9 @@
-"""
-bayesian.py — MAP vs last-layer Laplace uncertainty
-
-Binary ReLU classifier on two Gaussian blobs. The MAP model stays
-overconfident far from the training data; a diagonal last-layer Laplace
-approximation pulls predictions back toward 0.5 in sparse regions.
-
-Inspired by Kristiadi et al. 2020 (https://arxiv.org/abs/2002.10118).
-"""
 import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
-
-# ── layers ───────────────────────────────────────────────────────────────
 class ReLU:
     def forward(self, x):
         self.x_in = x.copy()
@@ -49,8 +38,6 @@ class BinaryCrossEntropy:
     def backward(self):
         return (self.p - self.y) / (self.p * (1.0 - self.p))
 
-
-# ── model ────────────────────────────────────────────────────────────────
 class Model:
     def __init__(self, layers, cost):
         self.layers = layers
@@ -70,8 +57,6 @@ class Model:
         for layer in reversed(self.layers):
             grad = layer.backward(grad)
 
-
-# ── dataset / training ───────────────────────────────────────────────────
 def make_blobs(n=300, seed=42):
     rng = np.random.default_rng(seed)
     X0  = rng.normal([-3.0, 0.0], 0.45, (n // 2, 2))
@@ -112,8 +97,6 @@ def get_features(model, x):
         x = layer.forward(x)
     return x
 
-
-# ── diagonal last-layer Laplace ──────────────────────────────────────────
 class DiagonalLastLayerLaplace:
     """Diagonal Gaussian over the final linear layer.
     Precision per weight: 1/sigma_prior^2 + sum_i kappa_i * phi_ij^2
@@ -148,7 +131,6 @@ class DiagonalLastLayerLaplace:
         return 1.0 / (1.0 + np.exp(-logits))
 
 
-# ── build ────────────────────────────────────────────────────────────────
 PRIOR_STD = 1.0
 
 def build(prior_std=PRIOR_STD):
@@ -158,14 +140,11 @@ def build(prior_std=PRIOR_STD):
     llla = DiagonalLastLayerLaplace(net, X, prior_std=prior_std)
     return net, llla, X, y
 
-
-# ── geometry ─────────────────────────────────────────────────────────────
 def _make_grid(X, margin=5.0, h=0.05):
     xc, yc = X[:, 0].mean(), X[:, 1].mean()
     xx, yy = np.meshgrid(np.arange(xc - margin, xc + margin, h),
                          np.arange(yc - margin, yc + margin, h))
     return xx, yy, np.c_[xx.ravel(), yy.ravel()]
-
 
 def compute_fields(model, llla, X, h=0.05, n_samples=256):
     xx, yy, grid = _make_grid(X, h=h)
@@ -188,8 +167,6 @@ def compute_fields(model, llla, X, h=0.05, n_samples=256):
         "bay_conf": bay_conf, "bay_pred": bay_pred,
     }
 
-
-# ── palette ──────────────────────────────────────────────────────────────
 BG         = "#07070d"
 FG         = "#c0c0d0"
 
@@ -208,8 +185,6 @@ _CONF_CMAP = LinearSegmentedColormap.from_list("conf", [
     (1.00, "#07070d"),
 ])
 
-
-# ── plot helpers ─────────────────────────────────────────────────────────
 def _clean_ax(ax, title):
     ax.set_facecolor(BG)
     ax.set_title(title, color=FG, fontsize=10, fontweight="bold", pad=10,
@@ -233,8 +208,6 @@ def _neon_boundary(ax, xx, yy, pred):
     ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_GLOW, linewidths=2.0, alpha=0.08)
     ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_NEON, linewidths=0.7, alpha=0.75)
 
-
-# ── plots ────────────────────────────────────────────────────────────────
 def plot_confidence_maps(fields, X, y):
     """MAP vs LLLA confidence side by side."""
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
@@ -248,7 +221,7 @@ def plot_confidence_maps(fields, X, y):
         cf = ax.contourf(xx, yy, conf, levels=50, cmap=_CONF_CMAP,
                          vmin=0.5, vmax=1.0, alpha=0.95)
         _neon_boundary(ax, xx, yy, pred)
-        _scatter_data(ax, X, y, s=7, alpha=0.72)
+        _scatter_data(ax, X, y, s=6, alpha=0.68)
         cb = plt.colorbar(cf, ax=ax, fraction=0.032, pad=0.03)
         cb.ax.tick_params(colors="#333340", labelsize=6)
         cb.outline.set_edgecolor("#101018")
@@ -276,7 +249,6 @@ def plot_1d_probe(model, llla, x_range=(-9.0, 9.0), n_points=400, n_samples=256)
     fig, axes = plt.subplots(1, 2, figsize=(13, 4))
     fig.patch.set_facecolor(BG)
 
-    # MAP
     axes[0].plot(xs, map_conf, color=CLASS1, linewidth=1.8, alpha=0.08)
     axes[0].plot(xs, map_conf, color=CLASS1, linewidth=0.9, alpha=0.9)
     axes[0].axhline(0.5, color=FG, linewidth=0.6, linestyle="--", alpha=0.3)
@@ -284,7 +256,6 @@ def plot_1d_probe(model, llla, x_range=(-9.0, 9.0), n_points=400, n_samples=256)
     _clean_ax(axes[0], "MAP")
     axes[0].set_xlabel("x", color="#444450", fontsize=8, fontfamily="monospace")
 
-    # LLLA
     axes[1].fill_between(xs,
                          np.clip(bay_conf - 3 * bay_std, 0.5, 1.0),
                          np.clip(bay_conf + 3 * bay_std, 0.5, 1.0),
@@ -296,7 +267,6 @@ def plot_1d_probe(model, llla, x_range=(-9.0, 9.0), n_points=400, n_samples=256)
     _clean_ax(axes[1], "LLLA")
     axes[1].set_xlabel("x", color="#444450", fontsize=8, fontfamily="monospace")
 
-    # data region markers
     for ax in axes:
         ax.axvspan(-4.0, -2.0, color=CLASS0, alpha=0.06)
         ax.axvspan( 2.0,  4.0, color=CLASS1, alpha=0.06)
@@ -331,7 +301,6 @@ def plot_prior_sweep(model, X, y, prior_stds=(0.3, 1.0, 3.0, 10.0)):
     return fig
 
 
-# ── run ──────────────────────────────────────────────────────────────────
 def _save(fig, path, dpi=200):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fig.savefig(path, dpi=dpi, facecolor=fig.get_facecolor(),
