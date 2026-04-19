@@ -52,23 +52,39 @@ activation-region map, 600×600, 32 hidden units
 
 A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the decision boundary emerges from that composed structure.
 
+Layerwise regions, their joint partition, and the resulting decision boundary:
 
 <p>
-<img src="assets/relu_layer1.png" width="24%"> <img src="assets/relu_layer2.png" width="24%"> <img src="assets/relu_joint.png" width="24%"> <img src="assets/relu_boundary.png" width="24%">
+  <img src="assets/relu_layer1.png" width="24%">
+  <img src="assets/relu_layer2.png" width="24%">
+  <img src="assets/relu_joint.png" width="24%">
+  <img src="assets/relu_boundary.png" width="24%">
 </p>
 
 <p align="center">
-<sub>Layer 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Layer 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Joint partition &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Decision boundary</sub>
+  <sub>Layer 1</sub>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <sub>Layer 2</sub>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <sub>Joint partition</sub>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <sub>Decision boundary</sub>
 </p>
 
+Radial probes through the trained network:
+
 <p>
-<img src="assets/relu_logit.png" width="48%"> <img src="assets/relu_conf_radius.png" width="48%">
+  <img src="assets/relu_logit.png" width="48%">
+  <img src="assets/relu_conf_radius.png" width="48%">
 </p>
 
 <p align="center">
-<sub>Logit difference vs radius &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Confidence vs radius</sub>
+  <sub>Logit difference vs radius</sub>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <sub>Confidence vs radius</sub>
 </p>
 
+Along a fixed ray, the logit difference changes piecewise linearly, with kinks where the activation pattern changes. Confidence stays high almost everywhere and dips mainly near class transitions.
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
