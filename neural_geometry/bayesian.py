@@ -172,10 +172,9 @@ FG         = "#c0c0d0"
 
 PINK_GLOW  = "#ff4fa3"
 PINK_NEON  = "#ff0f7b"
-PINK_HOT   = "#ff7cc4"
 
-CLASS0     = "#c88040"
-CLASS1     = "#40a0b8"
+CLASS0     = "#b08068"
+CLASS1     = "#6898a8"
 
 _CONF_CMAP = LinearSegmentedColormap.from_list("conf", [
     (0.00, "#ff5eb0"),
@@ -221,7 +220,7 @@ def plot_confidence_maps(fields, X, y):
         cf = ax.contourf(xx, yy, conf, levels=50, cmap=_CONF_CMAP,
                          vmin=0.5, vmax=1.0, alpha=0.95)
         _neon_boundary(ax, xx, yy, pred)
-        _scatter_data(ax, X, y, s=6, alpha=0.68)
+        _scatter_data(ax, X, y, s=5, alpha=0.55)
         cb = plt.colorbar(cf, ax=ax, fraction=0.032, pad=0.03)
         cb.ax.tick_params(colors="#333340", labelsize=6)
         cb.outline.set_edgecolor("#101018")
@@ -292,7 +291,7 @@ def plot_prior_sweep(model, X, y, prior_stds=(0.3, 1.0, 3.0, 10.0)):
         cf = ax.contourf(xx, yy, conf, levels=40, cmap=_CONF_CMAP,
                          vmin=0.5, vmax=1.0, alpha=0.95)
         _neon_boundary(ax, xx, yy, pred)
-        _scatter_data(ax, X, y, s=8)
+        _scatter_data(ax, X, y, s=5, alpha=0.55)
         plt.colorbar(cf, ax=ax, fraction=0.032, pad=0.03).ax.tick_params(
             colors="#333340", labelsize=5)
         _clean_ax(ax, f"\u03c3_prior = {s}")
