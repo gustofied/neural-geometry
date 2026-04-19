@@ -127,7 +127,8 @@ def update_tex(tid, fmt, dtype, w, h, data):
 
 
 # ── run ──────────────────────────────────────────────────────────────────
-def run():
+def run(record=False):
+    frames = [] if record else None
     np.random.seed(42)
     X, y, _ = make_radial_bands(
         n_samples=1600, band_radii=(0.55, 1.05, 1.55, 2.05),
@@ -310,11 +311,37 @@ def run():
 
         glfw.swap_buffers(window)
 
+        if record and not paused[0]:
+            # read framebuffer
+            pixels = GL.glReadPixels(0, 0, WIN_W, WIN_H, GL.GL_RGB, GL.GL_UNSIGNED_BYTE)
+            frame = np.frombuffer(pixels, dtype=np.uint8).reshape(WIN_H, WIN_W, 3)[::-1]
+            frames.append(frame.copy())
+
     GL.glDeleteTextures(2, [t_rid, t_logit])
     GL.glDeleteProgram(prog)
     GL.glDeleteProgram(prog_pts)
     glfw.terminate()
 
+    if record and frames:
+        from PIL import Image
+        assets = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
+        os.makedirs(assets, exist_ok=True)
+
+        # save header: last frame
+        header = Image.fromarray(frames[-1])
+        header.save(os.path.join(assets, "regions_header.png"))
+        print(f"  saved regions_header.png")
+
+        # save gif: sample ~60 frames for reasonable size
+        n = len(frames)
+        step = max(1, n // 60)
+        selected = [Image.fromarray(frames[i]) for i in range(0, n, step)]
+        gif_path = os.path.join(assets, "regions.gif")
+        selected[0].save(gif_path, save_all=True, append_images=selected[1:],
+                         duration=80, loop=0, optimize=True)
+        print(f"  saved regions.gif ({len(selected)} frames)")
+
 
 if __name__ == "__main__":
-    run()
+    import sys
+    run(record="--record" in sys.argv)
