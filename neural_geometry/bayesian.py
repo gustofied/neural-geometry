@@ -180,7 +180,9 @@ def compute_fields(model, llla, X, h=0.05, n_samples=256):
 
     return {
         "xx": xx, "yy": yy,
+        "map_prob": p_map.reshape(xx.shape),
         "map_conf": map_conf, "map_pred": map_pred,
+        "bay_prob": p_bay.reshape(xx.shape),
         "bay_conf": bay_conf, "bay_pred": bay_pred,
     }
 
@@ -193,8 +195,8 @@ PINK_GLOW  = "#ff4fa3"
 PINK_NEON  = "#ff0f7b"
 PINK_HOT   = "#ff7cc4"
 
-CLASS0     = "#ff9e00"
-CLASS1     = "#00c8e8"
+CLASS0     = "#d18a1f"
+CLASS1     = "#18a7c4"
 
 _CONF_CMAP = LinearSegmentedColormap.from_list("conf", [
     (0.00, "#ff5eb0"),
@@ -226,9 +228,8 @@ def _scatter_data(ax, X, y, s=10, alpha=0.9):
 
 
 def _neon_boundary(ax, xx, yy, pred):
-    ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_GLOW, linewidths=3.0, alpha=0.12)
-    ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_GLOW, linewidths=1.8, alpha=0.22)
-    ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_NEON, linewidths=0.9, alpha=0.95)
+    ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_GLOW, linewidths=2.0, alpha=0.08)
+    ax.contour(xx, yy, pred, levels=[0.5], colors=PINK_NEON, linewidths=0.7, alpha=0.75)
 
 
 # ── plots ────────────────────────────────────────────────────────────────
@@ -245,7 +246,7 @@ def plot_confidence_maps(fields, X, y):
         cf = ax.contourf(xx, yy, conf, levels=50, cmap=_CONF_CMAP,
                          vmin=0.5, vmax=1.0, alpha=0.95)
         _neon_boundary(ax, xx, yy, pred)
-        _scatter_data(ax, X, y, s=10)
+        _scatter_data(ax, X, y, s=8, alpha=0.75)
         cb = plt.colorbar(cf, ax=ax, fraction=0.032, pad=0.03)
         cb.ax.tick_params(colors="#333340", labelsize=6)
         cb.outline.set_edgecolor("#101018")
@@ -295,8 +296,8 @@ def plot_1d_probe(model, llla, x_range=(-9.0, 9.0), n_points=400, n_samples=256)
 
     # data region markers
     for ax in axes:
-        ax.axvspan(-4.0, -2.0, color=CLASS0, alpha=0.04)
-        ax.axvspan( 2.0,  4.0, color=CLASS1, alpha=0.04)
+        ax.axvspan(-4.0, -2.0, color=CLASS0, alpha=0.06)
+        ax.axvspan( 2.0,  4.0, color=CLASS1, alpha=0.06)
 
     plt.tight_layout()
     return fig
