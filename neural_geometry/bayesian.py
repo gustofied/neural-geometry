@@ -7,6 +7,8 @@ approximation pulls predictions back toward 0.5 in sparse regions.
 
 Inspired by Kristiadi et al. 2020 (https://arxiv.org/abs/2002.10118).
 """
+import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
@@ -246,7 +248,7 @@ def plot_confidence_maps(fields, X, y):
         cf = ax.contourf(xx, yy, conf, levels=50, cmap=_CONF_CMAP,
                          vmin=0.5, vmax=1.0, alpha=0.95)
         _neon_boundary(ax, xx, yy, pred)
-        _scatter_data(ax, X, y, s=8, alpha=0.75)
+        _scatter_data(ax, X, y, s=7, alpha=0.72)
         cb = plt.colorbar(cf, ax=ax, fraction=0.032, pad=0.03)
         cb.ax.tick_params(colors="#333340", labelsize=6)
         cb.outline.set_edgecolor("#101018")
@@ -323,7 +325,7 @@ def plot_prior_sweep(model, X, y, prior_stds=(0.3, 1.0, 3.0, 10.0)):
         _scatter_data(ax, X, y, s=8)
         plt.colorbar(cf, ax=ax, fraction=0.032, pad=0.03).ax.tick_params(
             colors="#333340", labelsize=5)
-        _clean_ax(ax, f"prior = {s}")
+        _clean_ax(ax, f"\u03c3_prior = {s}")
 
     plt.tight_layout()
     return fig
@@ -331,7 +333,6 @@ def plot_prior_sweep(model, X, y, prior_stds=(0.3, 1.0, 3.0, 10.0)):
 
 # ── run ──────────────────────────────────────────────────────────────────
 def _save(fig, path, dpi=200):
-    import os
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fig.savefig(path, dpi=dpi, facecolor=fig.get_facecolor(),
                 bbox_inches="tight", pad_inches=0.1)
@@ -339,11 +340,10 @@ def _save(fig, path, dpi=200):
 
 
 def run_all(save=False):
-    import os as _os
     net, llla, X, y = build()
     fields = compute_fields(net, llla, X)
 
-    assets = _os.path.join(_os.path.dirname(_os.path.dirname(__file__)), "assets")
+    assets = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
 
     figs = {
         "confidence": plot_confidence_maps(fields, X, y),
@@ -353,7 +353,7 @@ def run_all(save=False):
 
     if save:
         for name, fig in figs.items():
-            _save(fig, _os.path.join(assets, f"bayes_{name}.png"))
+            _save(fig, os.path.join(assets, f"bayes_{name}.png"))
 
     for fig in figs.values():
         fig.show()
@@ -362,5 +362,4 @@ def run_all(save=False):
 
 
 if __name__ == "__main__":
-    import os, sys
     run_all(save="--save" in sys.argv)
