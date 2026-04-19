@@ -19,8 +19,8 @@ uv run neural-geometry [command]
 | command | description |
 |---|---|
 | `simple` | simple neural network |
-| `speed` | python vs numpy vs numba, forward pass and activation-region map |
-| `relu` | radial bands and activation regions |
+| `speed` | forward pass and linear-region benchmark |
+| `relu` | layerwise ReLU regions and decision boundary |
 | `bayesian` | MAP vs LLLA confidence maps |
 | `relu-gl` | interactive linear regions |
 | `bayes-gl` | confidence field and posterior boundaries |
@@ -52,17 +52,27 @@ activation-region map, 600×600, 32 hidden units
 
 A from-scratch ReLU classifier on a radial-band dataset, with visualizations of layerwise regions, their joint partition, and the final decision boundary. Successive ReLU layers partition the plane into increasingly fine linear regions, and the decision boundary emerges from that composed structure.
 
-<p>
-<img src="assets/relu_regions.png" width="100%">
-</p>
+<br>
 
 <p>
-<img src="assets/relu_training.png" width="46%"> <img src="assets/relu_radial.png" width="50%">
+<img src="assets/relu_layer1.png" width="24%"> <img src="assets/relu_layer2.png" width="24%"> <img src="assets/relu_joint.png" width="24%"> <img src="assets/relu_boundary.png" width="24%">
 </p>
 
-<p>
-<img src="assets/relu_confidence.png" width="28%">
+<p align="center">
+<sub>Layer 1 regions &nbsp;&nbsp;&nbsp; Layer 2 regions &nbsp;&nbsp;&nbsp; Joint partition &nbsp;&nbsp;&nbsp; Decision boundary</sub>
 </p>
+
+<br>
+
+<p>
+<img src="assets/relu_logit.png" width="32%"> <img src="assets/relu_conf_radius.png" width="32%"> <img src="assets/relu_confidence.png" width="32%">
+</p>
+
+<p align="center">
+<sub>Logit difference vs radius &nbsp;&nbsp;&nbsp; Confidence vs radius &nbsp;&nbsp;&nbsp; Softmax confidence</sub>
+</p>
+
+<br>
 
 <kbd>bayesian</kbd> &nbsp; [neural_geometry/bayesian.py](neural_geometry/bayesian.py)
 
