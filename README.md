@@ -62,10 +62,10 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
     <td align="center" valign="middle"><img src="assets/relu_boundary.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center" height="0.5"><sub>Layer 1</sub></td>
-    <td align="center" height="0.5"><sub>Layer 2</sub></td>
-    <td align="center" height="0.5"><sub>Joint partition</sub></td>
-    <td align="center" height="0.5"><sub>Decision boundary</sub></td>
+    <td align="center">Layer 1</td>
+    <td align="center">Layer 2</td>
+    <td align="center">Joint partition</td>
+    <td align="center">Decision boundary</td>
   </tr>
 </table>
 
@@ -77,8 +77,8 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
     <td align="center" valign="middle"><img src="assets/relu_conf_radius.png" width="100%"></td>
   </tr>
   <tr>
-    <td align="center" height="0.5"><sub>Logit difference vs radius</sub></td>
-    <td align="center" height="0.5"><sub>Confidence vs radius</sub></td>
+    <td align="center">Logit difference vs radius</td>
+    <td align="center">Confidence vs radius</td>
   </tr>
 </table>
 
