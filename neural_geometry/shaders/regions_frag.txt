@@ -1,0 +1,62 @@
+#version 330 core
+
+uniform sampler2D u_region_id;
+uniform sampler2D u_logit;
+uniform vec2      u_view_min, u_view_max;
+uniform vec2      u_tex_min, u_tex_max;
+uniform float     u_boundary_str;
+
+in  vec2 v_uv;
+out vec4 f_color;
+
+int decode(vec2 uv) {
+    vec4 c = texture(u_region_id, uv);
+    return int(c.r * 255.0 + 0.5) + 256 * int(c.g * 255.0 + 0.5);
+}
+
+void main() {
+    vec2 world = mix(u_view_min, u_view_max, v_uv);
+    vec2 tuv   = (world - u_tex_min) / (u_tex_max - u_tex_min);
+
+    if (any(lessThan(tuv, vec2(0.0))) || any(greaterThan(tuv, vec2(1.0)))) {
+        f_color = vec4(0.020, 0.020, 0.032, 1.0);
+        return;
+    }
+
+    int  rid = decode(tuv);
+    vec2 ts  = 1.0 / vec2(textureSize(u_region_id, 0));
+
+    // four-neighbor region boundary
+    bool on_bnd = decode(tuv + vec2( ts.x, 0.0)) != rid
+               || decode(tuv + vec2(-ts.x, 0.0)) != rid
+               || decode(tuv + vec2(0.0,  ts.y)) != rid
+               || decode(tuv + vec2(0.0, -ts.y)) != rid;
+
+    // decision boundary logit
+    float logit = texture(u_logit, tuv).r;
+    float d     = abs(logit - 0.5) * 2.0;
+    float glow  = exp(-d * d * 55.0);  // tighter than before (was 22)
+
+    // region color from hashed id
+    float h  = fract(float(rid) * 0.618033988);
+    float h2 = fract(float(rid) * 0.381966);
+    float h3 = fract(float(rid) * 0.247);
+    vec3 col = vec3(0.035, 0.032, 0.055)
+             + vec3(0.09 * sin(h  * 6.283 + 0.0),
+                    0.07 * sin(h2 * 6.283 + 2.094),
+                    0.09 * sin(h3 * 6.283 + 4.189));
+
+    // fade outer regions so center structure draws the eye
+    vec2 center = (u_tex_min + u_tex_max) * 0.5;
+    float dist  = length(world - center) / length(u_tex_max - u_tex_min);
+    float fade  = 1.0 - smoothstep(0.25, 0.55, dist) * 0.4;
+    col *= fade;
+
+    // region edges
+    if (on_bnd) col += vec3(0.15, 0.14, 0.13) * 0.24 * fade;
+
+    // decision boundary: tight glow, grows with training
+    col += vec3(0.96, 0.04, 0.28) * glow * 0.8 * u_boundary_str;
+
+    f_color = vec4(col, 1.0);
+}

@@ -22,9 +22,7 @@ uv run neural-geometry [command]
 | `speed` | forward pass and linear-region benchmark |
 | `relu` | layerwise ReLU regions and decision boundary |
 | `bayesian` | MAP vs last-layer Laplace uncertainty  |
-| `train` | live partition evolution during training |
-| `relu-gl` | interactive linear regions |
-| `bayes-gl` | confidence field and posterior boundaries |
+| `regions` | live ReLU region viewer |
 
 ---
 
@@ -117,10 +115,6 @@ Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kri
 
 MAP quickly returns to near-1 confidence away from the data. The last-layer Laplace approximation relaxes toward 0.5 and shows wider predictive spread in regions with little or no training data.
 
-<kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl_relu.py](neural_geometry/gl_relu.py)
+<kbd>regions</kbd> &nbsp; [neural_geometry/gl_regions.py](neural_geometry/gl_regions.py)
 
-Interactive OpenGL viewer for the linear regions a ReLU network creates. Move the mouse to highlight the region under the cursor. The decision boundary glows red. Pan with drag, zoom with scroll.
-
-<kbd>bayes-gl</kbd> &nbsp; [neural_geometry/gl_bayesian.py](neural_geometry/gl_bayesian.py)
-
-OpenGL viewer comparing MAP and LLLA confidence side by side. The color encodes class (orange / teal) and saturation encodes conviction. MAP stays vivid everywhere, LLLA fades to grey far from training data. Sampled posterior decision boundaries are drawn as a pink fan: tight near the data, spreading out where the model is uncertain. The divider sweeps automatically.
+Live OpenGL viewer that trains a ReLU network and renders the joint activation partition in real time. The network's linear regions reorganize during training, and the decision boundary gradually settles into a curved shape assembled from local linear pieces. Drag to pan, scroll to zoom, space to pause.

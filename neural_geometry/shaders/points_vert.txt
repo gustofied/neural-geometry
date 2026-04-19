@@ -1,0 +1,12 @@
+#version 330 core
+layout(location=0) in vec2 in_pos;
+layout(location=1) in vec3 in_col;
+uniform vec2 u_view_min, u_view_max;
+out vec3 v_col;
+
+void main() {
+    vec2 ndc     = (in_pos - u_view_min) / (u_view_max - u_view_min) * 2.0 - 1.0;
+    gl_Position  = vec4(ndc, 0.0, 1.0);
+    gl_PointSize = 5.0;
+    v_col = in_col;
+}
