@@ -116,10 +116,10 @@ Binary ReLU classifier with a last-layer Laplace approximation, inspired by [Kri
 
 MAP quickly returns to near-1 confidence away from the data. The last-layer Laplace approximation relaxes toward 0.5 and shows wider predictive spread in regions with little or no training data.
 
-<kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl1_geometry.py](neural_geometry/gl1_geometry.py)
+<kbd>relu-gl</kbd> &nbsp; [neural_geometry/gl_relu.py](neural_geometry/gl_relu.py)
 
 Interactive OpenGL viewer for the linear regions a ReLU network creates. Move the mouse to highlight the region under the cursor. The decision boundary glows red. Pan with drag, zoom with scroll.
 
-<kbd>bayes-gl</kbd> &nbsp; [neural_geometry/gl2_binary.py](neural_geometry/gl2_binary.py)
+<kbd>bayes-gl</kbd> &nbsp; [neural_geometry/gl_bayesian.py](neural_geometry/gl_bayesian.py)
 
 OpenGL viewer comparing MAP and LLLA confidence side by side. The color encodes class (orange / teal) and saturation encodes conviction. MAP stays vivid everywhere, LLLA fades to grey far from training data. Sampled posterior decision boundaries are drawn as a pink fan: tight near the data, spreading out where the model is uncertain. The divider sweeps automatically.

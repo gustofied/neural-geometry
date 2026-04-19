@@ -9,8 +9,8 @@ SCRIPTS = {
     "speed":    ("forward pass and linear-region benchmark",            "neural_geometry/speed.py"),
     "relu":     ("layerwise ReLU regions and decision boundary",     "neural_geometry/relu.py"),
     "bayesian": ("MAP vs last-layer Laplace uncertainty",             "neural_geometry/bayesian.py"),
-    "relu-gl":  ("interactive linear regions",                       "neural_geometry/gl1_geometry.py"),
-    "bayes-gl": ("confidence field and posterior boundaries",        "neural_geometry/gl2_binary.py"),
+    "relu-gl":  ("interactive linear regions",                       "neural_geometry/gl_relu.py"),
+    "bayes-gl": ("confidence field and posterior boundaries",        "neural_geometry/gl_bayesian.py"),
 }
 
 def _run(name: str):
