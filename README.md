@@ -22,6 +22,7 @@ uv run neural-geometry [command]
 | `speed` | forward pass and linear-region benchmark |
 | `relu` | layerwise ReLU regions and decision boundary |
 | `bayesian` | MAP vs last-layer Laplace uncertainty  |
+| `train` | live partition evolution during training |
 | `relu-gl` | interactive linear regions |
 | `bayes-gl` | confidence field and posterior boundaries |
 
