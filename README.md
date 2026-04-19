@@ -54,35 +54,33 @@ A from-scratch ReLU classifier on a radial-band dataset, with visualizations of 
 
 Layerwise regions, their joint partition, and the resulting decision boundary:
 
-<p>
-  <img src="assets/relu_layer1.png" width="24%">
-  <img src="assets/relu_layer2.png" width="24%">
-  <img src="assets/relu_joint.png" width="24%">
-  <img src="assets/relu_boundary.png" width="24%">
-</p>
-
-<p align="center">
-  <sub>Layer 1</sub>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <sub>Layer 2</sub>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <sub>Joint partition</sub>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <sub>Decision boundary</sub>
-</p>
+<table>
+  <tr>
+    <td align="center"><img src="assets/relu_layer1.png" width="100%"></td>
+    <td align="center"><img src="assets/relu_layer2.png" width="100%"></td>
+    <td align="center"><img src="assets/relu_joint.png" width="100%"></td>
+    <td align="center"><img src="assets/relu_boundary.png" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Layer 1</sub></td>
+    <td align="center"><sub>Layer 2</sub></td>
+    <td align="center"><sub>Joint partition</sub></td>
+    <td align="center"><sub>Decision boundary</sub></td>
+  </tr>
+</table>
 
 Radial probes through the trained network:
 
-<p>
-  <img src="assets/relu_logit.png" width="48%">
-  <img src="assets/relu_conf_radius.png" width="48%">
-</p>
-
-<p align="center">
-  <sub>Logit difference vs radius</sub>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <sub>Confidence vs radius</sub>
-</p>
+<table>
+  <tr>
+    <td align="center"><img src="assets/relu_logit.png" width="100%"></td>
+    <td align="center"><img src="assets/relu_conf_radius.png" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Logit difference vs radius</sub></td>
+    <td align="center"><sub>Confidence vs radius</sub></td>
+  </tr>
+</table>
 
 Along a fixed ray, the logit difference changes piecewise linearly, with kinks where the activation pattern changes. Confidence stays high almost everywhere and dips mainly near class transitions.
 
