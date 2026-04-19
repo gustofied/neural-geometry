@@ -1,4 +1,4 @@
-<img src="assets/regions_header.png" width="100%">
+<img src="assets/regions_header.gif" width="100%">
 
 #### Neural Geometry
 
